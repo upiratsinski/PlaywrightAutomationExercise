@@ -6,3 +6,14 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+
+
+# Environment files
+.env
+.env.*
+.vscode/
+.idea/
+*.log
+.DS_Store
+Thumbs.db
+
