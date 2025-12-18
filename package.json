@@ -1,0 +1,13 @@
+{
+  "name": "playwrightautomationexercise",
+  "version": "1.0.0",
+  "description": "AQA Playwright test-suite for automationexercise.com",
+  "main": "index.js",
+  "scripts": {},
+  "author": "Uladzislau Piratsinski",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.57.0",
+    "@types/node": "^25.0.3"
+  }
+}
