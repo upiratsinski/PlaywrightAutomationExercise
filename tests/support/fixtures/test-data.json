@@ -1,0 +1,15 @@
+{
+  "invalidUser": {
+    "email": "test@example.com",
+    "password": "Password123"
+  },
+  "validUser": {
+    "email": "ivanovvlad01@mail.ru",
+    "password": "CypressTest1234"
+  },
+  "search": {
+    "keyword": "Tester",
+    "city": "praha",
+    "keywordForDetails": "QA"
+  }
+}
