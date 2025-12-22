@@ -7,7 +7,7 @@ import {
   checkElementsHrefAttribute,
 } from '../support/functions/mainPageFunc';
 
-test.describe('Main page tests', () => {
+test.describe('Main page taskbar UI tests', () => {
   test.beforeEach(async ({ page }) => {
     await openMainPage(page);
     await page.getByRole('button', { name: 'Consent' }).click();

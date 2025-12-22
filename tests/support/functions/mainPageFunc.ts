@@ -1,5 +1,5 @@
 import { expect, Page, Locator, test } from '@playwright/test';
-import { mainPageElements, Element } from '../elements/mainPageUI';
+import { Element } from '../elements/mainPageUI';
 
 export async function openMainPage(page: Page) {
   await page.goto('https://automationexercise.com/');
