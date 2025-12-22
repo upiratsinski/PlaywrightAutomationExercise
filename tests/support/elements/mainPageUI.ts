@@ -30,14 +30,14 @@ export const mainPageElements: Element[] = [
     attribute: { type: 'href', value: '/view_cart' },
   },
   {
-    locator: (page: Page) => page.getByRole('button', { name: 'Signup / Login' }),
-    name: 'Signup / Login button',
+    locator: (page: Page) => page.getByRole('link', { name: ' Signup / Login' }),
+    name: ' Signup / Login',
     text: 'Signup / Login',
     attribute: { type: 'href', value: '/login' },
   },
   {
-    locator: (page: Page) => page.getByRole('link', { name: 'Test Cases' }),
-    name: 'Test Cases link',
+    locator: (page: Page) => page.getByRole('link', { name: ' Test Cases' }),
+    name: 'Test Cases',
     text: 'Test Cases',
     attribute: { type: 'href', value: '/test_cases' },
   },
