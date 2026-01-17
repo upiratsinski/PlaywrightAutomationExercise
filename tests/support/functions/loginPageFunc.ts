@@ -2,6 +2,7 @@ import { Page } from '@playwright/test';
 import { validLoginData, invalidLoginData } from '../fixtures/authData';
 import { LoginSelectors } from '../elements/loginPageUI';
 
+
 export async function validLogin(page: Page, data: typeof validLoginData) {
   await page.getByRole('link', { name: ' Signup / Login' }).click();
   await page.locator(LoginSelectors.emailInput).fill(data.validUsername);

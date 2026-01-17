@@ -1,6 +1,7 @@
 import { expect, Page, Locator, test } from '@playwright/test';
 import { Element } from '../elements/mainPageUI';
 
+
 export async function openMainPage(page: Page) {
   await page.goto('https://automationexercise.com/');
 }

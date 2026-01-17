@@ -1,0 +1,20 @@
+export const registrationData = {
+  radiogender: 'Mr',
+  registrationName: 'ivanovvlad',
+  registrationEmail: 'ivanovvlad01@mail.ru',
+  registrationPassword: 'PlaywrightTest1234',
+  registrationDateOfBirthDay: '1',
+  registrationDateOfBirthMonth: 'January',
+  registrationDateOfBirthYear: '2001',
+    registrationFirstName: 'Ivan',
+    registrationLastName: 'Ivanov',
+    registrationCompany: 'TestCompany',
+    registrationAddress1: '123 Test St',    
+    registrationAddress2: 'Apt 4B',
+    registrationCountry: 'United States',
+    registrationState: 'TestState',
+    registrationCity: 'TestCity',
+    registrationZipCode: '12345',
+    registrationMobileNumber: '+1234567890',
+};
+
