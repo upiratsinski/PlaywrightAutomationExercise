@@ -1,6 +1,6 @@
 import { Page, test, expect } from '@playwright/test';
 import { LoginSelectors } from '../elements/loginPageUI';
-import { registrationData } from '../fixtures/registrationData';
+import { validLoginData, invalidLoginData, registrationData } from '../fixtures/authData.ts';
 import { RegistrationSelectors } from '../elements/registrationPageUI';
 import { mainPageElements } from '../elements/mainPageUI';
 
