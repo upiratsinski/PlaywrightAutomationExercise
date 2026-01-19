@@ -29,7 +29,7 @@ test.describe('Login Page Tests', () => {
     await openMainPage(page);
   });
 
-  test('Register user and delete it afterwards', async ({ page }) => {
+  test('Test Case 1: Register user and delete it afterwards', async ({ page }) => {
     await signUpUser(page, registrationData);
     await registerUser(page, registrationData);
 

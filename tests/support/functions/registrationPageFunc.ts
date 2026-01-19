@@ -1,8 +1,7 @@
-import { Page, test, expect } from '@playwright/test';
+import { Page, expect } from '@playwright/test';
 import { LoginSelectors } from '../elements/loginPageUI';
-import { validLoginData, invalidLoginData, registrationData } from '../fixtures/authData.ts';
+import { registrationData } from '../fixtures/authData.ts';
 import { RegistrationSelectors } from '../elements/registrationPageUI';
-import { mainPageElements } from '../elements/mainPageUI';
 
 export async function signUpUser(page: Page, data: typeof registrationData) {
   await page.getByRole('link', { name: ' Signup / Login' }).click();
