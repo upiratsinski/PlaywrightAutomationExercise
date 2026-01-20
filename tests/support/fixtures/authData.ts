@@ -1,10 +1,14 @@
 export const validLoginData = {
-  validUsername: 'AnakinSkywalker@gmail.com',
+  validUsername: 'AnakinSkywalker',
+  validEmail: 'AnakinSkywalker@gmail.com',
   validPassword: 'PlaywrightTest1234',
+  contactUsSubject: 'Inquiry about services',
+  contactUsMessage: 'Hello, I would like to know more about your services.',
 };
 
 export const invalidLoginData = {
-  invalidUsername: 'invalidlogintest@example.com',
+  invalidUsername: 'InvalidUser',
+  invalidEmail: 'invalidlogintest@example.com',
   invalidPassword: 'Password123',
 };
 

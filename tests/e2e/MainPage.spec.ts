@@ -1,4 +1,4 @@
-import { test } from '@playwright/test';
+import { test, expect } from '@playwright/test';
 import { mainPageElements } from '../support/elements/mainPageUI';
 import {
   openMainPage,
@@ -6,6 +6,8 @@ import {
   checkElementsText,
   checkElementsHrefAttribute,
 } from '../support/functions/mainPageFunc';
+import { fillContactUsForm } from '../support/functions/contactUsPageFunc.ts';
+import { validLoginData } from '../support/fixtures/authData.ts';
 
 test.describe('Main page taskbar UI tests', () => {
   test.beforeEach(async ({ page, context }) => {
@@ -37,5 +39,11 @@ test.describe('Main page taskbar UI tests', () => {
 
   test('Attributes check test', async ({ page }) => {
     await checkElementsHrefAttribute(page, mainPageElements);
+  });
+
+  test('Test Case 6: Contact Us Form', async ({ page }) => {
+    await page.click('a[href="/contact_us"]');
+    await expect(page.getByText('Get In Touch')).toBeVisible();
+    await fillContactUsForm(page, validLoginData);
   });
 });

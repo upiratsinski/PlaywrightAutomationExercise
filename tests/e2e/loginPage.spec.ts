@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test';
-import { validLogin, invalidLogin } from '../support/functions/loginPageFunc.js';
+import { validLogin, invalidLogin, invalidSignUp } from '../support/functions/loginPageFunc.js';
 import { openMainPage } from '../support/functions/mainPageFunc.js';
 import {
   validLoginData,
@@ -68,6 +68,14 @@ test.describe('Login Page Tests', () => {
     await test.step('Logout the user and verify redirection to login page', async () => {
       await page.getByRole('link', { name: ' Logout' }).click();
       await expect(page).toHaveURL('https://automationexercise.com/login');
+    });
+  });
+
+  test('Test Case 5: Register User with existing email', async ({ page }) => {
+    await invalidSignUp(page, validLoginData);
+
+    await test.step('Verify error message for existing email', async () => {
+      await expect(page.getByText('Email address already exist!')).toBeVisible();
     });
   });
 });
