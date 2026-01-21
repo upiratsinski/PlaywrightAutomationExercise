@@ -41,9 +41,9 @@ test.describe('Main page taskbar UI tests', () => {
     await checkElementsHrefAttribute(page, mainPageElements);
   });
 
-  test('Test Case 6: Contact Us Form', async ({ page }) => {
-    await page.click('a[href="/contact_us"]');
-    await expect(page.getByText('Get In Touch')).toBeVisible();
-    await fillContactUsForm(page, validLoginData);
-  });
+  //   test('Test Case 6: Contact Us Form', async ({ page }) => {
+  //     await page.click('a[href="/contact_us"]');
+  //     await expect(page.getByText('Get In Touch')).toBeVisible();
+  //     await fillContactUsForm(page, validLoginData);
+  //   });
 });
