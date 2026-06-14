@@ -7,7 +7,7 @@
 //   signUpSubmitButton: '[data-qa="signup-button"]',
 // };
 
-import { Locator, Page, expect } from '@playwright/test';
+import { expect, Page } from '@playwright/test';
 import { MainPage } from './mainPage.ts';
 import { validLoginData, invalidLoginData } from '../fixtures/authData.ts';
 import { registrationData } from '../fixtures/authData.ts';
@@ -115,6 +115,10 @@ export class LoginPage {
     return this.page.locator('[data-qa="continue-button"]');
   }
 
+  private get accountCreatedTitle() {
+    return this.page.locator('[data-qa="account-created"]');
+  }
+
   //Delete user selectors
 
   private get deleteAccountButton() {
@@ -144,6 +148,7 @@ export class LoginPage {
     await this.mobileNumberInput.fill(registrationData.registrationMobileNumber);
 
     await this.createAccountButton.click();
+    await expect(this.accountCreatedTitle).toBeVisible();
     await this.continueButton.click();
     return new MainPage(this.page);
   }
@@ -155,8 +160,8 @@ export class LoginPage {
   }
   // Method to perform signup
   async signup(): Promise<MainPage> {
-    await this.signupNameInput.fill(validLoginData.validUsername);
-    await this.signupEmailInput.fill(validLoginData.validEmail);
+    await this.signupNameInput.fill(registrationData.registrationName);
+    await this.signupEmailInput.fill(registrationData.registrationEmail);
     await this.signUpSubmitButton.click();
     return new MainPage(this.page);
   }

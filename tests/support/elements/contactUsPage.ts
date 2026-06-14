@@ -30,25 +30,28 @@ export class ContactUsPage {
 
   // Method to fill out and submit the contact us form
   async fillContactUsForm(): Promise<MainPage> {
+    this.page.once('dialog', (dialog) => dialog.accept());
+
     await this.nameInput.fill(contactUsData.name);
     await this.emailInput.fill(contactUsData.email);
     await this.subjectInput.fill(contactUsData.subject);
     await this.messageTextarea.fill(contactUsData.message);
+    await expect(this.nameInput).toHaveValue(contactUsData.name);
+    await expect(this.emailInput).toHaveValue(contactUsData.email);
+    await expect(this.subjectInput).toHaveValue(contactUsData.subject);
+    await expect(this.messageTextarea).toHaveValue(contactUsData.message);
 
     if (contactUsData.filePath) {
       await this.uploadFileInput.setInputFiles(contactUsData.filePath);
     }
 
     await this.submitButton.click();
+
     return new MainPage(this.page);
   }
 
   // Method to accept the dialog that appears after form submission
   async catchDialog(): Promise<void> {
-    this.page.on('dialog', (dialog) => {
-      console.log('Dialog message: ', dialog.message());
-      console.log('Type of dialog: ', dialog.type());
-      dialog.accept();
-    });
+    await this.page.waitForLoadState('domcontentloaded');
   }
 }

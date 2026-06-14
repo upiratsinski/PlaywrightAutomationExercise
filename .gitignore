@@ -6,6 +6,7 @@ node_modules/
 /blob-report/
 /playwright/.cache/
 /playwright/.auth/
+/.pw-tmp/
 
 
 # Environment files
@@ -16,4 +17,3 @@ node_modules/
 *.log
 .DS_Store
 Thumbs.db
-

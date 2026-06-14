@@ -1,6 +1,6 @@
 export const validLoginData = {
   validUsername: 'LukeSkywalker',
-  validEmail: 'LukeSkywalker@gmail.com',
+  validEmail: `LukeSkywalker-${Date.now()}@gmail.com`,
   validPassword: 'PlaywrightTest1234',
   contactUsSubject: 'Inquiry about services',
   contactUsMessage: 'Hello, I would like to know more about your services.',
@@ -15,7 +15,7 @@ export const invalidLoginData = {
 export const registrationData = {
   radiogender: 'Mr',
   registrationName: 'AnakinSkywalker',
-  registrationEmail: 'AnakinSkywalker@gmail.com',
+  registrationEmail: `AnakinSkywalker-${Date.now()}@gmail.com`,
   registrationPassword: 'PlaywrightTest1234',
   registrationDateOfBirthDay: '1',
   registrationDateOfBirthMonth: 'January',
@@ -37,5 +37,23 @@ export const contactUsData = {
   email: 'john.doe@example.com',
   subject: 'Inquiry about services',
   message: 'Hello, I would like to know more about your services.',
-  filePath: 'tests/support/fixtures/sampleFile.txt',
+  filePath: 'tests/support/fixtures/SampleFile.txt',
+};
+
+export const subscriptionData = {
+  email: `subscription-${Date.now()}@example.com`,
+};
+
+export const productSearchData = {
+  productName: 'Dress',
+};
+
+export const reviewData = {
+  name: 'Luke Skywalker',
+  email: 'luke.review@example.com',
+  review: 'Great product for automation practice.',
+};
+
+export const orderData = {
+  comment: 'Please deliver this test order carefully.',
 };
