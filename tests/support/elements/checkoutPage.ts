@@ -33,12 +33,14 @@ export class CheckoutPage {
     return this.page.locator('#address_invoice');
   }
 
+  // Verifies checkout page sections.
   async verifyCheckoutPage(): Promise<void> {
     await expect(this.page).toHaveURL(/\/checkout$/);
     await expect(this.addressDetailsTitle).toBeVisible();
     await expect(this.reviewOrderTitle).toBeVisible();
   }
 
+  // Verifies delivery and billing addresses.
   async verifyRegisteredAddressDetails(): Promise<void> {
     for (const address of [this.deliveryAddress, this.billingAddress]) {
       await expect(address).toContainText(registrationData.registrationFirstName);
@@ -54,6 +56,7 @@ export class CheckoutPage {
     }
   }
 
+  // Adds order comment and places order.
   async placeOrder(comment: string): Promise<PaymentPage> {
     await this.commentTextarea.fill(comment);
     await this.placeOrderButton.click();

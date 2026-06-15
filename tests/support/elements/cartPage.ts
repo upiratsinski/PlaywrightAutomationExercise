@@ -1,5 +1,6 @@
 import { Page, Locator, expect } from '@playwright/test';
 import { CheckoutPage } from './checkoutPage.ts';
+import { cartProductData, subscriptionData } from '../fixtures/authData.ts';
 
 export class CartPage {
   private readonly page: Page;
@@ -62,21 +63,30 @@ export class CartPage {
     return this.page.getByRole('link', { name: 'Register / Login' });
   }
 
+  // Verifies cart page is opened.
   async verifyCartPage(): Promise<void> {
     await expect(this.page).toHaveURL(/\/view_cart$/);
   }
 
+  // Verifies subscription block in cart footer.
   async verifySubscription(): Promise<void> {
     await this.subscriptionTitle.scrollIntoViewIfNeeded();
     await expect(this.subscriptionTitle).toBeVisible();
   }
 
+  // Submits subscription email and checks success message.
   async subscribe(email: string): Promise<void> {
     await this.subscriptionEmailInput.fill(email);
     await this.subscriptionButton.click();
     await expect(this.subscriptionSuccessMessage).toContainText('You have been successfully subscribed!');
   }
 
+  // Subscribes with default test email.
+  async subscribeWithDefaultEmail(): Promise<void> {
+    await this.subscribe(subscriptionData.email);
+  }
+
+  // Verifies a specific product row in cart.
   async verifyProductInCart(
     id: number,
     expectedName: string,
@@ -92,30 +102,53 @@ export class CartPage {
     await expect(product.locator('.cart_total')).toHaveText(expectedTotalPrice);
   }
 
+  // Verifies first two products in cart.
+  async verifyFirstTwoProductsInCart(): Promise<void> {
+    await this.verifyProductInCart(
+      cartProductData.firstProduct.id,
+      cartProductData.firstProduct.name,
+      cartProductData.firstProduct.price,
+      cartProductData.firstProduct.quantity,
+      cartProductData.firstProduct.totalPrice,
+    );
+    await this.verifyProductInCart(
+      cartProductData.secondProduct.id,
+      cartProductData.secondProduct.name,
+      cartProductData.secondProduct.price,
+      cartProductData.secondProduct.quantity,
+      cartProductData.secondProduct.totalPrice,
+    );
+  }
+
+  // Verifies product quantity in cart.
   async verifyProductQuantity(id: number, expectedQuantity: string): Promise<void> {
     await expect(this.cartProductById(id).locator('.cart_quantity')).toHaveText(expectedQuantity);
   }
 
+  // Verifies at least one product is in cart.
   async verifyAnyProductVisible(): Promise<void> {
     await expect(this.cartRows.first()).toBeVisible();
   }
 
+  // Proceeds to checkout.
   async proceedToCheckout(): Promise<CheckoutPage> {
     await this.proceedToCheckoutButton.click();
     return new CheckoutPage(this.page);
   }
 
+  // Proceeds to checkout and opens registration.
   async proceedToCheckoutAndRegister(): Promise<void> {
     await this.proceedToCheckoutButton.click();
     await this.registerLoginLink.click();
   }
 
+  // Removes product from cart.
   async removeProduct(id: number): Promise<void> {
     await this.cartProductById(id).locator('.cart_quantity_delete').click();
     await expect(this.cartProductById(id)).toBeHidden();
   }
 
-  // Method to verify cart item details
+  // Verifies cart item details by expected text.
   async verifyCartItemDetails(
     expectedDescription: string,
     expectedPrice: string,
@@ -128,7 +161,7 @@ export class CartPage {
     await expect(this.cartTotalPrice).toHaveText(expectedTotalPrice);
   }
 
-  // Method to delete an item from the cart
+  // Deletes first cart item.
   async deleteCartItem(): Promise<void> {
     await this.deleteBtn.click();
   }

@@ -1,5 +1,6 @@
 import { expect, Page, Locator } from '@playwright/test';
 import { CartPage } from './cartPage.ts';
+import { brandData, productSearchData, reviewData } from '../fixtures/authData.ts';
 
 export class ProductsPage {
   private readonly page: Page;
@@ -85,20 +86,24 @@ export class ProductsPage {
     return this.productCard(index).locator('a.add-to-cart').last();
   }
 
+  // Verifies all products page is opened.
   async verifyAllProductsPage(): Promise<void> {
     await expect(this.page).toHaveURL(/\/products$/);
     await expect(this.allProductsTitle).toBeVisible();
   }
 
+  // Verifies products list is visible.
   async verifyProductsListVisible(): Promise<void> {
     await expect(this.productCards.first()).toBeVisible();
     expect(await this.productCards.count()).toBeGreaterThan(0);
   }
 
+  // Opens first product details page.
   async openFirstProductDetails(): Promise<void> {
     await this.firstProduct.click();
   }
 
+  // Verifies product details block.
   async verifyProductDetailsVisible(): Promise<void> {
     await expect(this.page).toHaveURL(/\/product_details\/\d+$/);
     const productInformation = this.page.locator('.product-information');
@@ -111,11 +116,18 @@ export class ProductsPage {
     await expect(productInformation.getByText('Brand:')).toBeVisible();
   }
 
+  // Searches product by name.
   async searchProduct(productName: string): Promise<void> {
     await this.searchInput.fill(productName);
     await this.searchButton.click();
   }
 
+  // Searches default product from test data.
+  async searchDefaultProduct(): Promise<void> {
+    await this.searchProduct(productSearchData.productName);
+  }
+
+  // Verifies searched products are shown.
   async verifySearchedProductsVisible(productName: string): Promise<void> {
     await expect(this.searchedProductsTitle).toBeVisible();
     await this.verifyProductsListVisible();
@@ -124,52 +136,74 @@ export class ProductsPage {
     expect(productNames.length).toBeGreaterThan(0);
   }
 
+  // Verifies default search results.
+  async verifyDefaultSearchedProductsVisible(): Promise<void> {
+    await this.verifySearchedProductsVisible(productSearchData.productName);
+  }
+
+  // Adds product by card index.
   async addProductToCartByIndex(index: number): Promise<void> {
     await this.productCard(index).hover();
     await this.productAddToCartLink(index).click();
   }
 
+  // Closes modal and continues shopping.
   async continueShopping(): Promise<void> {
     await this.continueShoppingButton.click();
   }
 
+  // Opens cart from add-to-cart modal.
   async openCartFromModal(): Promise<CartPage> {
     await this.viewCartLink.click();
     return new CartPage(this.page);
   }
 
+  // Adds first searched product and opens cart.
   async addFirstSearchedProductToCart(): Promise<CartPage> {
     await this.addProductToCartByIndex(0);
     return this.openCartFromModal();
   }
 
+  // Verifies brands sidebar is visible.
   async verifyBrandsVisible(): Promise<void> {
     await expect(this.brandsSidebar.getByRole('heading', { name: 'Brands' })).toBeVisible();
   }
 
+  // Opens brand page and checks title.
   async openBrand(brandName: string): Promise<void> {
     await this.brandsSidebar.getByRole('link', { name: brandName }).click();
     await expect(this.page).toHaveURL(new RegExp(`/brand_products/${brandName}`));
     await expect(this.page.getByRole('heading', { name: `Brand - ${brandName} Products` })).toBeVisible();
   }
 
+  // Opens Polo brand page.
+  async openPoloBrand(): Promise<void> {
+    await this.openBrand(brandData.firstBrand);
+  }
+
+  // Opens H&M brand page.
+  async openHmBrand(): Promise<void> {
+    await this.openBrand(brandData.secondBrand);
+  }
+
+  // Verifies review form is visible.
   async verifyWriteReviewVisible(): Promise<void> {
     await expect(this.page.getByRole('link', { name: 'Write Your Review' })).toBeVisible();
   }
 
+  // Verifies review was submitted.
   async verifyReviewSubmitted(): Promise<void> {
     await expect(this.reviewSuccessMessage).toContainText('Thank you for your review.');
   }
 
-  // Method to add product to cart
-
+  // Adds first product with custom quantity.
   async addProductToCart(quantity: number): Promise<void> {
     await this.firstProduct.click();
     await this.quantityInput.fill(quantity.toString());
     await this.productAddToCartBtn.click();
   }
 
-  // Method to submit a review
+  // Submits product review.
   async submitReview(name: string, email: string, review: string): Promise<void> {
     await this.reviewNameInput.fill(name);
     await this.reviewEmailInput.fill(email);
@@ -177,7 +211,12 @@ export class ProductsPage {
     await this.reviewBtn.click();
     await this.verifyReviewSubmitted();
   }
-  // Method to navigate to cart
+
+  // Submits default product review.
+  async submitDefaultReview(): Promise<void> {
+    await this.submitReview(reviewData.name, reviewData.email, reviewData.review);
+  }
+  // Opens cart page.
   async navigateToCart(): Promise<CartPage> {
     await this.cartBtn.click();
     return new CartPage(this.page);

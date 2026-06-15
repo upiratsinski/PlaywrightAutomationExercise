@@ -16,7 +16,12 @@ export default defineConfig({
   projects: [
     {
       name: 'chrome',
+      testMatch: /.*e2e.*\.spec\.ts/,
       use: { ...devices['Desktop Chrome'], channel: 'chrome' },
+    },
+    {
+      name: 'api',
+      testMatch: /.*api.*\.spec\.ts/,
     },
   ],
 });

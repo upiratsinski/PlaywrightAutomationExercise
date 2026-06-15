@@ -1,15 +1,6 @@
-// export const LoginSelectors = {
-//   emailInput: '[data-qa="login-email"]',
-//   passwordInput: '[data-qa="login-password"]',
-//   submitButton: '[data-qa="login-button"]',
-//   signupNameInput: '[data-qa="signup-name"]',
-//   signupEmailInput: '[data-qa="signup-email"]',
-//   signUpSubmitButton: '[data-qa="signup-button"]',
-// };
-
 import { expect, Page } from '@playwright/test';
 import { MainPage } from './mainPage.ts';
-import { validLoginData, invalidLoginData } from '../fixtures/authData.ts';
+import { validLoginData, invalidLoginData, loginUserProfileData } from '../fixtures/authData.ts';
 import { registrationData } from '../fixtures/authData.ts';
 
 export class LoginPage {
@@ -129,7 +120,7 @@ export class LoginPage {
     return this.page.locator('a[data-qa="continue-button"]');
   }
 
-  // Method to perform registration
+  // Registers a new user with registration data.
   async registerUser(): Promise<MainPage> {
     await this.genderRadio.click();
     await this.passwordRegistrationInput.fill(registrationData.registrationPassword);
@@ -152,13 +143,36 @@ export class LoginPage {
     await this.continueButton.click();
     return new MainPage(this.page);
   }
-  //Method to delete the logged-in user
+
+  // Registers reusable login user.
+  async registerLoginUser(): Promise<MainPage> {
+    await this.genderRadio.click();
+    await this.passwordRegistrationInput.fill(validLoginData.validPassword);
+    await this.birthDaySelect.selectOption(loginUserProfileData.birthDay);
+    await this.birthMonthSelect.selectOption(loginUserProfileData.birthMonth);
+    await this.birthYearSelect.selectOption(loginUserProfileData.birthYear);
+    await this.firstNameInput.fill(loginUserProfileData.firstName);
+    await this.lastNameInput.fill(loginUserProfileData.lastName);
+    await this.companyInput.fill(loginUserProfileData.company);
+    await this.address1Input.fill(loginUserProfileData.address1);
+    await this.address2Input.fill(loginUserProfileData.address2);
+    await this.countrySelect.selectOption(loginUserProfileData.country);
+    await this.stateInput.fill(loginUserProfileData.state);
+    await this.cityInput.fill(loginUserProfileData.city);
+    await this.zipCodeInput.fill(loginUserProfileData.zipCode);
+    await this.mobileNumberInput.fill(loginUserProfileData.mobileNumber);
+    await this.createAccountButton.click();
+    await expect(this.accountCreatedTitle).toBeVisible();
+    await this.continueButton.click();
+    return new MainPage(this.page);
+  }
+  // Deletes the logged-in user.
   async deleteUser(): Promise<MainPage> {
     await this.deleteAccountButton.click();
     await this.confirmDeleteButton.click();
     return new MainPage(this.page);
   }
-  // Method to perform signup
+  // Starts signup with registration data.
   async signup(): Promise<MainPage> {
     await this.signupNameInput.fill(registrationData.registrationName);
     await this.signupEmailInput.fill(registrationData.registrationEmail);
@@ -166,7 +180,15 @@ export class LoginPage {
     return new MainPage(this.page);
   }
 
-  // Method to perform login
+  // Starts signup with login user data.
+  async signupLoginUser(): Promise<MainPage> {
+    await this.signupNameInput.fill(validLoginData.validUsername);
+    await this.signupEmailInput.fill(validLoginData.validEmail);
+    await this.signUpSubmitButton.click();
+    return new MainPage(this.page);
+  }
+
+  // Logs in with valid credentials.
   async login(): Promise<MainPage> {
     await this.emailInput.fill(validLoginData.validEmail);
     await this.passwordInput.fill(validLoginData.validPassword);
@@ -174,14 +196,14 @@ export class LoginPage {
     return new MainPage(this.page);
   }
 
-  // Method to perform login with invalid credentials
+  // Tries login with invalid credentials.
   async loginWithInvalidCredentials(): Promise<void> {
     await this.emailInput.fill(invalidLoginData.invalidEmail);
     await this.passwordInput.fill(invalidLoginData.invalidPassword);
     await this.submitButton.click();
   }
 
-  // Method to perform signup with existing email
+  // Starts signup with existing email.
   async signupWithExistingEmail(): Promise<void> {
     await this.signupNameInput.fill(validLoginData.validUsername);
     await this.signupEmailInput.fill(validLoginData.validEmail);

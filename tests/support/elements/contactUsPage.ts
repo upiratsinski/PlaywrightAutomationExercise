@@ -28,7 +28,7 @@ export class ContactUsPage {
     return this.page.locator('[data-qa="submit-button"]');
   }
 
-  // Method to fill out and submit the contact us form
+  // Fills and submits contact form.
   async fillContactUsForm(): Promise<MainPage> {
     this.page.once('dialog', (dialog) => dialog.accept());
 
@@ -50,7 +50,7 @@ export class ContactUsPage {
     return new MainPage(this.page);
   }
 
-  // Method to accept the dialog that appears after form submission
+  // Waits until contact form submission settles.
   async catchDialog(): Promise<void> {
     await this.page.waitForLoadState('domcontentloaded');
   }

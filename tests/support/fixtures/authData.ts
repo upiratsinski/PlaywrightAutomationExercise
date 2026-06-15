@@ -1,15 +1,35 @@
+import dotenv from 'dotenv';
+
+const env = dotenv.config().parsed ?? {};
+
 export const validLoginData = {
-  validUsername: 'LukeSkywalker',
-  validEmail: `LukeSkywalker-${Date.now()}@gmail.com`,
-  validPassword: 'PlaywrightTest1234',
+  validUsername: env.LOGIN_USERNAME ?? 'LukeSkywalker',
+  validEmail: env.LOGIN_EMAIL ?? 'lukeskywalker.aqa@example.com',
+  validPassword: env.LOGIN_PASSWORD ?? 'PlaywrightTest1234',
   contactUsSubject: 'Inquiry about services',
   contactUsMessage: 'Hello, I would like to know more about your services.',
 };
 
+export const loginUserProfileData = {
+  firstName: 'Luke',
+  lastName: 'Skywalker',
+  company: 'Rebellion Inc.',
+  address1: '123 Test St',
+  address2: 'Apt 4B',
+  country: 'Israel',
+  state: 'Israel',
+  city: 'Jerusalem',
+  zipCode: '12345',
+  mobileNumber: '+1234567890',
+  birthDay: '1',
+  birthMonth: 'January',
+  birthYear: '2001',
+};
+
 export const invalidLoginData = {
   invalidUsername: 'InvalidUser',
-  invalidEmail: 'invalidlogintest@example.com',
-  invalidPassword: 'Password123',
+  invalidEmail: env.INVALID_LOGIN_EMAIL ?? 'invalidlogintest@example.com',
+  invalidPassword: env.INVALID_LOGIN_PASSWORD ?? 'Password123',
 };
 
 export const registrationData = {
@@ -56,4 +76,34 @@ export const reviewData = {
 
 export const orderData = {
   comment: 'Please deliver this test order carefully.',
+};
+
+export const paymentData = {
+  nameOnCard: 'Luke Skywalker',
+  cardNumber: '4111111111111111',
+  cvc: '123',
+  expiryMonth: '12',
+  expiryYear: '2030',
+};
+
+export const cartProductData = {
+  firstProduct: {
+    id: 1,
+    name: 'Blue Top',
+    price: 'Rs. 500',
+    quantity: '1',
+    totalPrice: 'Rs. 500',
+  },
+  secondProduct: {
+    id: 2,
+    name: 'Men Tshirt',
+    price: 'Rs. 400',
+    quantity: '1',
+    totalPrice: 'Rs. 400',
+  },
+};
+
+export const brandData = {
+  firstBrand: 'Polo',
+  secondBrand: 'H&M',
 };
