@@ -12,6 +12,7 @@ node_modules/
 # Environment files
 .env
 .env.*
+!.env.example
 .vscode/
 .idea/
 *.log

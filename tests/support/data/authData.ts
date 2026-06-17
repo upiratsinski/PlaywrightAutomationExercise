@@ -1,13 +1,11 @@
-import dotenv from 'dotenv';
+import { env } from '../config/env.ts';
 
-const env = dotenv.config().parsed ?? {};
+const uniqueId = Date.now();
 
 export const validLoginData = {
-  validUsername: env.LOGIN_USERNAME ?? 'LukeSkywalker',
-  validEmail: env.LOGIN_EMAIL ?? 'lukeskywalker.aqa@example.com',
-  validPassword: env.LOGIN_PASSWORD ?? 'PlaywrightTest1234',
-  contactUsSubject: 'Inquiry about services',
-  contactUsMessage: 'Hello, I would like to know more about your services.',
+  username: env.loginUsername,
+  email: env.loginEmail,
+  password: env.loginPassword,
 };
 
 export const loginUserProfileData = {
@@ -27,29 +25,27 @@ export const loginUserProfileData = {
 };
 
 export const invalidLoginData = {
-  invalidUsername: 'InvalidUser',
-  invalidEmail: env.INVALID_LOGIN_EMAIL ?? 'invalidlogintest@example.com',
-  invalidPassword: env.INVALID_LOGIN_PASSWORD ?? 'Password123',
+  email: env.invalidLoginEmail,
+  password: env.invalidLoginPassword,
 };
 
 export const registrationData = {
-  radiogender: 'Mr',
-  registrationName: 'AnakinSkywalker',
-  registrationEmail: `AnakinSkywalker-${Date.now()}@gmail.com`,
-  registrationPassword: 'PlaywrightTest1234',
-  registrationDateOfBirthDay: '1',
-  registrationDateOfBirthMonth: 'January',
-  registrationDateOfBirthYear: '2001',
-  registrationFirstName: 'Anakin',
-  registrationLastName: 'Skywalker',
-  registrationCompany: 'Rebellion Inc.',
-  registrationAddress1: '123 Test St',
-  registrationAddress2: 'Apt 4B',
-  registrationCountry: 'Israel',
-  registrationState: 'Israel',
-  registrationCity: 'jerusalem',
-  registrationZipCode: '12345',
-  registrationMobileNumber: '+1234567890',
+  name: 'AnakinSkywalker',
+  email: `anakin-skywalker-${uniqueId}@example.com`,
+  password: env.registrationPassword,
+  firstName: 'Anakin',
+  lastName: 'Skywalker',
+  company: 'Rebellion Inc.',
+  address1: '123 Test St',
+  address2: 'Apt 4B',
+  country: 'Israel',
+  state: 'Israel',
+  city: 'Jerusalem',
+  zipCode: '12345',
+  mobileNumber: '+1234567890',
+  birthDay: '1',
+  birthMonth: 'January',
+  birthYear: '2001',
 };
 
 export const contactUsData = {
@@ -57,11 +53,11 @@ export const contactUsData = {
   email: 'john.doe@example.com',
   subject: 'Inquiry about services',
   message: 'Hello, I would like to know more about your services.',
-  filePath: 'tests/support/fixtures/SampleFile.txt',
+  filePath: 'tests/support/data/SampleFile.txt',
 };
 
 export const subscriptionData = {
-  email: `subscription-${Date.now()}@example.com`,
+  email: `subscription-${uniqueId}@example.com`,
 };
 
 export const productSearchData = {
@@ -80,10 +76,10 @@ export const orderData = {
 
 export const paymentData = {
   nameOnCard: 'Luke Skywalker',
-  cardNumber: '4111111111111111',
-  cvc: '123',
-  expiryMonth: '12',
-  expiryYear: '2030',
+  cardNumber: env.paymentCardNumber,
+  cvc: env.paymentCvc,
+  expiryMonth: env.paymentExpiryMonth,
+  expiryYear: env.paymentExpiryYear,
 };
 
 export const cartProductData = {

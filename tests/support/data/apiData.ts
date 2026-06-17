@@ -1,7 +1,11 @@
+import { env } from '../config/env.ts';
+
+const uniqueId = Date.now();
+
 export const apiUser = {
   name: 'Api Test User',
-  email: `api-user-${Date.now()}@example.com`,
-  password: 'PlaywrightTest1234',
+  email: `api-user-${uniqueId}@example.com`,
+  password: env.apiUserPassword,
   title: 'Mr',
   birth_date: '1',
   birth_month: 'January',
@@ -23,6 +27,6 @@ export const apiSearchData = {
 };
 
 export const invalidApiLoginData = {
-  email: 'invalid-api-user@example.com',
-  password: 'wrong-password',
+  email: env.invalidApiLoginEmail,
+  password: env.invalidApiLoginPassword,
 };

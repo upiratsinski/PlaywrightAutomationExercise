@@ -1,11 +1,10 @@
 import { expect, Locator, Page } from '@playwright/test';
-import { paymentData } from '../fixtures/authData.ts';
+import { BasePage } from './basePage.ts';
+import { paymentData } from '../data/authData.ts';
 
-export class PaymentPage {
-  private readonly page: Page;
-
+export class PaymentPage extends BasePage {
   constructor(page: Page) {
-    this.page = page;
+    super(page);
   }
 
   private get nameOnCardInput(): Locator {
@@ -44,8 +43,8 @@ export class PaymentPage {
     return this.page.locator('[data-qa="continue-button"]');
   }
 
-  // Fills payment form with test card data.
   async fillPaymentDetails(): Promise<void> {
+    this.log('fill payment details');
     await this.nameOnCardInput.fill(paymentData.nameOnCard);
     await this.cardNumberInput.fill(paymentData.cardNumber);
     await this.cvcInput.fill(paymentData.cvc);
@@ -53,23 +52,22 @@ export class PaymentPage {
     await this.expiryYearInput.fill(paymentData.expiryYear);
   }
 
-  // Pays and verifies order confirmation.
-  async payAndConfirmOrder(): Promise<void> {
+  async payAndShouldConfirmOrder(): Promise<void> {
+    this.log('pay and confirm order');
     await this.payButton.click();
     await expect(this.orderPlacedTitle).toBeVisible();
   }
 
-  // Downloads invoice and checks file name.
-  async downloadInvoice(): Promise<void> {
-    const download = await Promise.all([
+  async downloadInvoiceShouldHaveCorrectName(): Promise<void> {
+    this.log('download invoice');
+    const [download] = await Promise.all([
       this.page.waitForEvent('download'),
       this.downloadInvoiceLink.click(),
     ]);
 
-    expect(download[0].suggestedFilename()).toContain('invoice');
+    expect(download.suggestedFilename()).toContain('invoice');
   }
 
-  // Continues after order confirmation.
   async continueAfterOrder(): Promise<void> {
     await this.continueButton.click();
   }
