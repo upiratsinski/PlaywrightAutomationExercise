@@ -1,9 +1,10 @@
-import { Browser, Page } from '@playwright/test';
+import { APIRequestContext, Page } from '@playwright/test';
 import { CartPage } from '../pages/cartPage.ts';
 import { MainPage } from '../pages/mainPage.ts';
-import { orderData } from '../data/authData.ts';
+import { loginUserProfileData, orderData, validLoginData } from '../data/authData.ts';
 import { logAction } from '../utils/logger.ts';
 
+// Adds the first two catalog products and opens the cart from the modal.
 export async function addFirstTwoProductsToCart(mainPage: MainPage): Promise<CartPage> {
   const productsPage = await mainPage.openProductsPage();
 
@@ -13,12 +14,14 @@ export async function addFirstTwoProductsToCart(mainPage: MainPage): Promise<Car
   return productsPage.openCartFromModal();
 }
 
+// Registers a fresh UI user from the login page.
 export async function registerUserFromLogin(mainPage: MainPage): Promise<MainPage> {
   const loginPage = await mainPage.openLoginPage();
 
   return loginPage.registerNewUser();
 }
 
+// Completes checkout and optionally checks invoice download.
 export async function completeOrder(cartPage: CartPage, shouldDownloadInvoice = false): Promise<void> {
   const checkoutPage = await cartPage.proceedToCheckout();
 
@@ -33,7 +36,7 @@ export async function completeOrder(cartPage: CartPage, shouldDownloadInvoice = 
   }
 }
 
-// Third-party ads occasionally cover controls on the demo site, so UI tests block only known ad hosts.
+// Blocks known ad hosts because third-party ads occasionally cover controls on the demo site.
 export async function blockThirdPartyAds(page: Page): Promise<void> {
   await page.route('**/*', (route) => {
     const url = route.request().url();
@@ -51,43 +54,60 @@ export async function blockThirdPartyAds(page: Page): Promise<void> {
   });
 }
 
-export async function createReusableLoginUser(browser: Browser): Promise<void> {
-  logAction('prepare reusable UI login user');
-  const page = await browser.newPage();
+// Creates the reusable login user through API to keep UI setup fast and stable.
+export async function createReusableLoginUser(request: APIRequestContext): Promise<void> {
+  logAction('prepare reusable UI login user through API');
+  await deleteReusableLoginUser(request);
 
-  try {
-    await blockThirdPartyAds(page);
+  const body = await sendCreateLoginUserRequest(request);
 
-    const mainPage = new MainPage(page);
-    await mainPage.open();
-    await deleteLoginUserFromMainPage(mainPage);
-
-    await mainPage.open();
-    const loginPage = await mainPage.openLoginPage();
-    await loginPage.registerReusableLoginUser();
-  } finally {
-    await page.close();
+  if (body.responseCode !== 201) {
+    throw new Error(`Reusable UI user was not created. API response code: ${body.responseCode}`);
   }
 }
 
-export async function deleteReusableLoginUser(browser: Browser): Promise<void> {
-  logAction('delete reusable UI login user');
-  const page = await browser.newPage();
+// Deletes the reusable login user through API; 404 is fine when setup failed early.
+export async function deleteReusableLoginUser(request: APIRequestContext): Promise<void> {
+  logAction('delete reusable UI login user through API');
+  const response = await request.delete('/api/deleteAccount', {
+    form: {
+      email: validLoginData.email,
+      password: validLoginData.password,
+    },
+  });
+  const body = await parseApiResponse(response);
 
-  try {
-    await blockThirdPartyAds(page);
-
-    const mainPage = new MainPage(page);
-    await mainPage.open();
-    await deleteLoginUserFromMainPage(mainPage);
-  } finally {
-    await page.close();
+  if (![200, 404].includes(body.responseCode)) {
+    throw new Error(`Reusable UI user was not deleted. API response code: ${body.responseCode}`);
   }
 }
 
-async function deleteLoginUserFromMainPage(mainPage: MainPage): Promise<void> {
-  const loginPage = await mainPage.openLoginPage();
-  const loggedInMainPage = await loginPage.loginAsValidUser();
+async function sendCreateLoginUserRequest(request: APIRequestContext): Promise<{ responseCode: number }> {
+  const response = await request.post('/api/createAccount', {
+    form: {
+      name: validLoginData.username,
+      email: validLoginData.email,
+      password: validLoginData.password,
+      title: 'Mr',
+      birth_date: loginUserProfileData.birthDay,
+      birth_month: loginUserProfileData.birthMonth,
+      birth_year: loginUserProfileData.birthYear,
+      firstname: loginUserProfileData.firstName,
+      lastname: loginUserProfileData.lastName,
+      company: loginUserProfileData.company,
+      address1: loginUserProfileData.address1,
+      address2: loginUserProfileData.address2,
+      country: loginUserProfileData.country,
+      zipcode: loginUserProfileData.zipCode,
+      state: loginUserProfileData.state,
+      city: loginUserProfileData.city,
+      mobile_number: loginUserProfileData.mobileNumber,
+    },
+  });
 
-  await loggedInMainPage.deleteAccountIfLoggedIn();
+  return parseApiResponse(response);
+}
+
+async function parseApiResponse(response: { text(): Promise<string> }): Promise<{ responseCode: number }> {
+  return JSON.parse(await response.text()) as { responseCode: number };
 }

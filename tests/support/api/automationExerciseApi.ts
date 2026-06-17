@@ -33,6 +33,7 @@ export class AutomationExerciseApi {
     expect([200, 404]).toContain(body.responseCode);
   }
 
+  // Checks that the products list endpoint returns products.
   async shouldReturnAllProductsList(): Promise<void> {
     const response = await this.request.get('/api/productsList');
     const body = await this.parseApiResponse(response);
@@ -42,6 +43,7 @@ export class AutomationExerciseApi {
     expect(body.products?.length).toBeGreaterThan(0);
   }
 
+  // Checks that POST is not supported for products list.
   async shouldRejectPostToProductsList(): Promise<void> {
     const response = await this.request.post('/api/productsList');
     const body = await this.parseApiResponse(response);
@@ -50,6 +52,7 @@ export class AutomationExerciseApi {
     expect(body.message).toBe('This request method is not supported.');
   }
 
+  // Checks that the brands list endpoint returns brands.
   async shouldReturnAllBrandsList(): Promise<void> {
     const response = await this.request.get('/api/brandsList');
     const body = await this.parseApiResponse(response);
@@ -59,6 +62,7 @@ export class AutomationExerciseApi {
     expect(body.brands?.length).toBeGreaterThan(0);
   }
 
+  // Checks that PUT is not supported for brands list.
   async shouldRejectPutToBrandsList(): Promise<void> {
     const response = await this.request.put('/api/brandsList');
     const body = await this.parseApiResponse(response);
@@ -67,6 +71,7 @@ export class AutomationExerciseApi {
     expect(body.message).toBe('This request method is not supported.');
   }
 
+  // Checks that product search returns results.
   async shouldReturnSearchResults(): Promise<void> {
     const response = await this.request.post('/api/searchProduct', {
       form: {
@@ -80,6 +85,7 @@ export class AutomationExerciseApi {
     expect(body.products?.length).toBeGreaterThan(0);
   }
 
+  // Checks that product search requires a search parameter.
   async shouldRequireSearchProductParameter(): Promise<void> {
     const response = await this.request.post('/api/searchProduct');
     const body = await this.parseApiResponse(response);
@@ -88,6 +94,7 @@ export class AutomationExerciseApi {
     expect(body.message).toBe('Bad request, search_product parameter is missing in POST request.');
   }
 
+  // Checks that login verification accepts valid details.
   async shouldVerifyLoginWithValidDetails(): Promise<void> {
     const response = await this.request.post('/api/verifyLogin', {
       form: {
@@ -101,6 +108,7 @@ export class AutomationExerciseApi {
     expect(body.message).toBe('User exists!');
   }
 
+  // Checks that login verification requires an email.
   async shouldRequireEmailForLogin(): Promise<void> {
     const response = await this.request.post('/api/verifyLogin', {
       form: {
@@ -113,6 +121,7 @@ export class AutomationExerciseApi {
     expect(body.message).toBe('Bad request, email or password parameter is missing in POST request.');
   }
 
+  // Checks that DELETE is not supported for login verification.
   async shouldRejectDeleteToVerifyLogin(): Promise<void> {
     const response = await this.request.delete('/api/verifyLogin');
     const body = await this.parseApiResponse(response);
@@ -121,6 +130,7 @@ export class AutomationExerciseApi {
     expect(body.message).toBe('This request method is not supported.');
   }
 
+  // Checks that invalid API login details are rejected.
   async shouldRejectInvalidLogin(): Promise<void> {
     const response = await this.request.post('/api/verifyLogin', {
       form: invalidApiLoginData,
@@ -131,6 +141,7 @@ export class AutomationExerciseApi {
     expect(body.message).toBe('User not found!');
   }
 
+  // Checks that an account can be created by API.
   async shouldCreateUserAccount(): Promise<void> {
     const user = {
       ...apiUser,
@@ -144,6 +155,7 @@ export class AutomationExerciseApi {
     await this.deleteAccount(user.email, user.password);
   }
 
+  // Checks that an account can be deleted by API.
   async shouldDeleteUserAccount(): Promise<void> {
     const user = {
       ...apiUser,
@@ -157,6 +169,7 @@ export class AutomationExerciseApi {
     expect(body.message).toBe('Account deleted!');
   }
 
+  // Checks that an account can be updated by API.
   async shouldUpdateUserAccount(): Promise<void> {
     const updatedUser = {
       ...apiUser,
@@ -183,6 +196,7 @@ export class AutomationExerciseApi {
     });
   }
 
+  // Checks that account details can be loaded by email.
   async shouldReturnUserDetailsByEmail(): Promise<void> {
     const body = await this.getUserDetails(apiUser.email);
 
@@ -191,12 +205,14 @@ export class AutomationExerciseApi {
     expect(body.user?.email).toBe(apiUser.email);
   }
 
+  // Sends the create account API request.
   private async postCreateAccount(user: typeof apiUser): Promise<ApiBody> {
     const response = await this.request.post('/api/createAccount', { form: user });
 
     return this.parseApiResponse(response);
   }
 
+  // Sends the delete account API request.
   private async deleteAccount(email: string, password: string): Promise<ApiBody> {
     const response = await this.request.delete('/api/deleteAccount', {
       form: {
@@ -208,6 +224,7 @@ export class AutomationExerciseApi {
     return this.parseApiResponse(response);
   }
 
+  // Loads account details by email.
   private async getUserDetails(email: string): Promise<ApiBody> {
     const response = await this.request.get('/api/getUserDetailByEmail', {
       params: {
@@ -218,6 +235,7 @@ export class AutomationExerciseApi {
     return this.parseApiResponse(response);
   }
 
+  // Parses the Automation Exercise API body and checks transport status.
   private async parseApiResponse(response: APIResponse): Promise<ApiBody> {
     expect(response.status()).toBe(200);
     return JSON.parse(await response.text()) as ApiBody;

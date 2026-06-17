@@ -16,59 +16,73 @@ test.describe('Automation Exercise API tests', () => {
     automationExerciseApi = new AutomationExerciseApi(request);
   });
 
-  test('API 1: Get All Products List', async () => {
+  // Checks that the products endpoint returns catalog items.
+  test('@smoke @regression API 1: Get All Products List', async () => {
     await automationExerciseApi.shouldReturnAllProductsList();
   });
 
-  test('API 2: POST To All Products List', async () => {
+  // Checks that products list rejects an unsupported POST request.
+  test('@regression API 2: POST To All Products List', async () => {
     await automationExerciseApi.shouldRejectPostToProductsList();
   });
 
-  test('API 3: Get All Brands List', async () => {
+  // Checks that the brands endpoint returns brand items.
+  test('@smoke @regression API 3: Get All Brands List', async () => {
     await automationExerciseApi.shouldReturnAllBrandsList();
   });
 
-  test('API 4: PUT To All Brands List', async () => {
+  // Checks that brands list rejects an unsupported PUT request.
+  test('@regression API 4: PUT To All Brands List', async () => {
     await automationExerciseApi.shouldRejectPutToBrandsList();
   });
 
-  test('API 5: POST To Search Product', async () => {
+  // Checks that product search returns matching API results.
+  test('@smoke @regression API 5: POST To Search Product', async () => {
     await automationExerciseApi.shouldReturnSearchResults();
   });
 
-  test('API 6: POST To Search Product without search_product parameter', async () => {
+  // Checks that product search requires the search parameter.
+  test('@regression API 6: POST To Search Product without search_product parameter', async () => {
     await automationExerciseApi.shouldRequireSearchProductParameter();
   });
 
-  test('API 7: POST To Verify Login with valid details', async () => {
+  // Checks that verifyLogin accepts a valid API user.
+  test('@smoke @regression API 7: POST To Verify Login with valid details', async () => {
     await automationExerciseApi.shouldVerifyLoginWithValidDetails();
   });
 
-  test('API 8: POST To Verify Login without email parameter', async () => {
+  // Checks that verifyLogin requires an email.
+  test('@regression API 8: POST To Verify Login without email parameter', async () => {
     await automationExerciseApi.shouldRequireEmailForLogin();
   });
 
-  test('API 9: DELETE To Verify Login', async () => {
+  // Checks that verifyLogin rejects DELETE requests.
+  test('@regression API 9: DELETE To Verify Login', async () => {
     await automationExerciseApi.shouldRejectDeleteToVerifyLogin();
   });
 
-  test('API 10: POST To Verify Login with invalid details', async () => {
+  // Checks that verifyLogin rejects invalid credentials.
+  test('@regression API 10: POST To Verify Login with invalid details', async () => {
     await automationExerciseApi.shouldRejectInvalidLogin();
   });
 
-  test('API 11: POST To Create/Register User Account', async () => {
+  // Checks that a user account can be created by API.
+  test('@regression API 11: POST To Create/Register User Account', async () => {
     await automationExerciseApi.shouldCreateUserAccount();
   });
 
-  test('API 12: DELETE METHOD To Delete User Account', async () => {
+  // Checks that a user account can be deleted by API.
+  test('@regression API 12: DELETE METHOD To Delete User Account', async () => {
     await automationExerciseApi.shouldDeleteUserAccount();
   });
 
-  test('API 13: PUT METHOD To Update User Account', async () => {
+  // Checks that a user account can be updated by API.
+  test('@regression API 13: PUT METHOD To Update User Account', async () => {
     await automationExerciseApi.shouldUpdateUserAccount();
   });
 
-  test('API 14: GET user account detail by email', async () => {
+  // Checks that user details can be retrieved by email.
+  test('@regression API 14: GET user account detail by email', async () => {
     await automationExerciseApi.shouldReturnUserDetailsByEmail();
   });
 });

@@ -8,36 +8,44 @@ export class CheckoutPage extends BasePage {
     super(page);
   }
 
+  // Finds the Address Details section title.
   private get addressDetailsTitle(): Locator {
     return this.page.getByText('Address Details');
   }
 
+  // Finds the Review Your Order section title.
   private get reviewOrderTitle(): Locator {
     return this.page.getByText('Review Your Order');
   }
 
+  // Finds the order comment text area.
   private get commentTextarea(): Locator {
     return this.page.locator('textarea[name="message"]');
   }
 
+  // Finds the Place Order button.
   private get placeOrderButton(): Locator {
     return this.page.getByRole('link', { name: 'Place Order' });
   }
 
+  // Finds the delivery address block.
   private get deliveryAddress(): Locator {
     return this.page.locator('#address_delivery');
   }
 
+  // Finds the billing address block.
   private get billingAddress(): Locator {
     return this.page.locator('#address_invoice');
   }
 
+  // Checks that the checkout page is opened.
   async shouldBeOpened(): Promise<void> {
     await expect(this.page).toHaveURL('/checkout');
     await expect(this.addressDetailsTitle).toBeVisible();
     await expect(this.reviewOrderTitle).toBeVisible();
   }
 
+  // Checks that delivery and billing addresses match the registered user.
   async shouldShowRegisteredAddressDetails(): Promise<void> {
     for (const address of [this.deliveryAddress, this.billingAddress]) {
       await expect(address).toContainText(registrationData.firstName);
@@ -53,6 +61,7 @@ export class CheckoutPage extends BasePage {
     }
   }
 
+  // Places the order with a test comment.
   async placeOrder(comment: string): Promise<PaymentPage> {
     this.log('place order from checkout page');
     await this.commentTextarea.fill(comment);

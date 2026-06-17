@@ -5,6 +5,7 @@ export default defineConfig({
   testDir: './tests',
   timeout: 30_000,
   fullyParallel: false,
+  workers: process.env.CI ? 2 : 2,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   outputDir: 'test-results',
@@ -13,10 +14,7 @@ export default defineConfig({
     timeout: 5_000,
   },
 
-  reporter: [
-    ['list'],
-    ['html', { open: 'never', outputFolder: 'playwright-report' }],
-  ],
+  reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
 
   use: {
     baseURL: env.baseUrl,

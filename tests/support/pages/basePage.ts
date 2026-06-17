@@ -8,6 +8,7 @@ export abstract class BasePage {
     this.page = page;
   }
 
+  // Logs page actions with the current Page Object name.
   protected log(action: string): void {
     logAction(`${this.constructor.name}: ${action}`);
   }

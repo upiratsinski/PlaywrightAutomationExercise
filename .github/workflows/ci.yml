@@ -1,0 +1,71 @@
+name: Playwright CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    name: Quality checks and tests
+    runs-on: ubuntu-latest
+
+    env:
+      BASE_URL: https://automationexercise.com
+      LOGIN_USERNAME: ${{ secrets.LOGIN_USERNAME }}
+      LOGIN_EMAIL: ${{ secrets.LOGIN_EMAIL }}
+      LOGIN_PASSWORD: ${{ secrets.LOGIN_PASSWORD }}
+      INVALID_LOGIN_EMAIL: ${{ secrets.INVALID_LOGIN_EMAIL }}
+      INVALID_LOGIN_PASSWORD: ${{ secrets.INVALID_LOGIN_PASSWORD }}
+      REGISTRATION_PASSWORD: ${{ secrets.REGISTRATION_PASSWORD }}
+      API_USER_PASSWORD: ${{ secrets.API_USER_PASSWORD }}
+      INVALID_API_LOGIN_EMAIL: ${{ secrets.INVALID_API_LOGIN_EMAIL }}
+      INVALID_API_LOGIN_PASSWORD: ${{ secrets.INVALID_API_LOGIN_PASSWORD }}
+      PAYMENT_CARD_NUMBER: ${{ secrets.PAYMENT_CARD_NUMBER }}
+      PAYMENT_CVC: ${{ secrets.PAYMENT_CVC }}
+      PAYMENT_EXPIRY_MONTH: ${{ secrets.PAYMENT_EXPIRY_MONTH }}
+      PAYMENT_EXPIRY_YEAR: ${{ secrets.PAYMENT_EXPIRY_YEAR }}
+
+    steps:
+      # Checkout gives CI access to the repository code.
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # Node setup enables npm cache for faster dependency installation.
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+          cache: npm
+
+      # npm ci installs exactly what is stored in package-lock.json.
+      - name: Install dependencies
+        run: npm ci
+
+      # Playwright browsers are required for Chromium UI tests.
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
+
+      # Formatting check keeps the project style consistent.
+      - name: Check formatting
+        run: npm run format:check
+
+      # ESLint catches focused tests, skipped tests, waits, and TypeScript issues.
+      - name: Run ESLint
+        run: npm run lint
+
+      # Secret check prevents known demo credentials from leaking into source files.
+      - name: Check hardcoded secrets
+        run: npm run check:secrets
+
+      # Full test run covers both UI and API projects.
+      - name: Run Playwright tests
+        run: npm test
+
+      # The HTML report is kept even when tests fail, so failures are easy to review.
+      - name: Upload Playwright report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
