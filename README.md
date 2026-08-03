@@ -56,6 +56,7 @@ tests/
   site. Application and unrelated third-party traffic are not broadly blocked.
 - `data-qa` is configured as Playwright's test-id attribute and is accessed through `getByTestId()`.
 - Smoke and regression selection use Playwright's structured tag metadata, so tags do not clutter test titles.
+- The live suite uses one worker locally and in CI to avoid sending concurrent traffic to the shared demo service.
 
 Automation Exercise commonly returns HTTP `200` even when the JSON body contains a business `responseCode` such as
 `400`, `404`, or `405`. API specs therefore assert the transport status and the body code separately.
