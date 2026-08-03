@@ -9,30 +9,34 @@ export default tseslint.config(
   js.configs.recommended,
   ...tseslint.configs.recommended,
   {
-    files: ['**/*.ts', '**/*.mjs'],
+    files: ['**/*.ts'],
     languageOptions: {
       ecmaVersion: 'latest',
       sourceType: 'module',
       globals: {
-        console: 'readonly',
         process: 'readonly',
       },
     },
     rules: {
-      '@typescript-eslint/no-explicit-any': 'off',
-      '@typescript-eslint/no-inferrable-types': 'off',
-      'no-console': 'off',
+      '@typescript-eslint/consistent-type-imports': 'error',
     },
   },
   {
-    files: ['tests/**/*.spec.ts'],
-    plugins: {
-      playwright,
-    },
+    ...playwright.configs['flat/recommended'],
+    files: ['tests/**/*.ts'],
     rules: {
+      ...playwright.configs['flat/recommended'].rules,
       'playwright/no-focused-test': 'error',
-      'playwright/no-skipped-test': 'warn',
+      'playwright/no-force-option': 'error',
+      'playwright/no-skipped-test': 'error',
       'playwright/no-wait-for-timeout': 'error',
+      'playwright/prefer-web-first-assertions': 'error',
+      'playwright/expect-expect': [
+        'warn',
+        {
+          assertFunctionPatterns: ['^should[A-Z]'],
+        },
+      ],
     },
   },
 );
