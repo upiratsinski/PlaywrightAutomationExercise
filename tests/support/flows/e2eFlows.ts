@@ -1,113 +1,60 @@
-import { APIRequestContext, Page } from '@playwright/test';
-import { CartPage } from '../pages/cartPage.ts';
-import { MainPage } from '../pages/mainPage.ts';
-import { loginUserProfileData, orderData, validLoginData } from '../data/authData.ts';
-import { logAction } from '../utils/logger.ts';
+import { test, type Page } from '@playwright/test';
+import type { OrderDetails } from '../data/checkout.ts';
+import type { ProductReference } from '../data/products.ts';
+import type { TestUser } from '../data/users.ts';
+import type { CartPage } from '../pages/cartPage.ts';
+import type { MainPage } from '../pages/mainPage.ts';
+import type { PaymentPage } from '../pages/paymentPage.ts';
 
-// Adds the first two catalog products and opens the cart from the modal.
-export async function addFirstTwoProductsToCart(mainPage: MainPage): Promise<CartPage> {
-  const productsPage = await mainPage.openProductsPage();
+const AD_HOST_SUFFIXES = ['doubleclick.net', 'googlesyndication.com', 'googleadservices.com'];
+const AD_HOSTS = new Set(['adservice.google.com']);
 
-  await productsPage.addProductToCartByIndex(0);
-  await productsPage.continueShopping();
-  await productsPage.addProductToCartByIndex(1);
-  return productsPage.openCartFromModal();
+export async function addFirstTwoProductsToCart(
+  mainPage: MainPage,
+  products: readonly [ProductReference, ProductReference],
+): Promise<CartPage> {
+  return test.step('Add the first two products to the cart', async () => {
+    const productsPage = await mainPage.openProductsPage();
+
+    await productsPage.addProductToCart(products[0]);
+    await productsPage.continueShopping();
+    await productsPage.addProductToCart(products[1]);
+    return productsPage.openCartFromModal();
+  });
 }
 
-// Registers a fresh UI user from the login page.
-export async function registerUserFromLogin(mainPage: MainPage): Promise<MainPage> {
-  const loginPage = await mainPage.openLoginPage();
-
-  return loginPage.registerNewUser();
+export async function registerUserFromLogin(mainPage: MainPage, user: TestUser): Promise<MainPage> {
+  return test.step('Register a user', async () => {
+    const loginPage = await mainPage.openLoginPage();
+    return loginPage.register(user);
+  });
 }
 
-// Completes checkout and optionally checks invoice download.
-export async function completeOrder(cartPage: CartPage, shouldDownloadInvoice = false): Promise<void> {
-  const checkoutPage = await cartPage.proceedToCheckout();
+export async function completeOrder(cartPage: CartPage, order: OrderDetails): Promise<PaymentPage> {
+  return test.step('Complete checkout', async () => {
+    const checkoutPage = await cartPage.proceedToCheckout();
 
-  await checkoutPage.shouldBeOpened();
-  const paymentPage = await checkoutPage.placeOrder(orderData.comment);
-  await paymentPage.fillPaymentDetails();
-  await paymentPage.payAndShouldConfirmOrder();
-
-  if (shouldDownloadInvoice) {
-    await paymentPage.downloadInvoiceShouldHaveCorrectName();
-    await paymentPage.continueAfterOrder();
-  }
+    await checkoutPage.shouldBeOpened();
+    const paymentPage = await checkoutPage.placeOrder(order.comment);
+    await paymentPage.fillPaymentDetails(order.payment);
+    await paymentPage.pay();
+    await paymentPage.shouldShowSuccessfulOrder();
+    return paymentPage;
+  });
 }
 
-// Blocks known ad hosts because third-party ads occasionally cover controls on the demo site.
 export async function blockThirdPartyAds(page: Page): Promise<void> {
-  await page.route('**/*', (route) => {
-    const url = route.request().url();
+  await page.route('**/*', async (route) => {
+    const hostname = new URL(route.request().url()).hostname;
+    const isKnownAdHost =
+      AD_HOSTS.has(hostname) ||
+      AD_HOST_SUFFIXES.some((suffix) => hostname === suffix || hostname.endsWith(`.${suffix}`));
 
-    if (
-      url.includes('googleads') ||
-      url.includes('doubleclick') ||
-      url.includes('googlesyndication') ||
-      url.includes('adservice')
-    ) {
-      return route.abort();
+    if (isKnownAdHost) {
+      await route.abort();
+      return;
     }
 
-    return route.continue();
+    await route.continue();
   });
-}
-
-// Creates the reusable login user through API to keep UI setup fast and stable.
-export async function createReusableLoginUser(request: APIRequestContext): Promise<void> {
-  logAction('prepare reusable UI login user through API');
-  await deleteReusableLoginUser(request);
-
-  const body = await sendCreateLoginUserRequest(request);
-
-  if (body.responseCode !== 201) {
-    throw new Error(`Reusable UI user was not created. API response code: ${body.responseCode}`);
-  }
-}
-
-// Deletes the reusable login user through API; 404 is fine when setup failed early.
-export async function deleteReusableLoginUser(request: APIRequestContext): Promise<void> {
-  logAction('delete reusable UI login user through API');
-  const response = await request.delete('/api/deleteAccount', {
-    form: {
-      email: validLoginData.email,
-      password: validLoginData.password,
-    },
-  });
-  const body = await parseApiResponse(response);
-
-  if (![200, 404].includes(body.responseCode)) {
-    throw new Error(`Reusable UI user was not deleted. API response code: ${body.responseCode}`);
-  }
-}
-
-async function sendCreateLoginUserRequest(request: APIRequestContext): Promise<{ responseCode: number }> {
-  const response = await request.post('/api/createAccount', {
-    form: {
-      name: validLoginData.username,
-      email: validLoginData.email,
-      password: validLoginData.password,
-      title: 'Mr',
-      birth_date: loginUserProfileData.birthDay,
-      birth_month: loginUserProfileData.birthMonth,
-      birth_year: loginUserProfileData.birthYear,
-      firstname: loginUserProfileData.firstName,
-      lastname: loginUserProfileData.lastName,
-      company: loginUserProfileData.company,
-      address1: loginUserProfileData.address1,
-      address2: loginUserProfileData.address2,
-      country: loginUserProfileData.country,
-      zipcode: loginUserProfileData.zipCode,
-      state: loginUserProfileData.state,
-      city: loginUserProfileData.city,
-      mobile_number: loginUserProfileData.mobileNumber,
-    },
-  });
-
-  return parseApiResponse(response);
-}
-
-async function parseApiResponse(response: { text(): Promise<string> }): Promise<{ responseCode: number }> {
-  return JSON.parse(await response.text()) as { responseCode: number };
 }
