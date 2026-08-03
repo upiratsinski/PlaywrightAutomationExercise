@@ -1,5 +1,7 @@
 # Playwright Automation Exercise
 
+[![Playwright CI](https://github.com/upiratsinski/PlaywrightAutomationExercise/actions/workflows/ci.yml/badge.svg)](https://github.com/upiratsinski/PlaywrightAutomationExercise/actions/workflows/ci.yml)
+
 Playwright and TypeScript portfolio project that automates the public
 [Automation Exercise](https://automationexercise.com) UI and API practice scenarios.
 
