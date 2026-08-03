@@ -6,10 +6,6 @@ export interface ApiMessageResponse extends CommonApiResponse {
   message: string;
 }
 
-export interface ApiError extends CommonApiResponse {
-  message: string;
-}
-
 export interface ProductCategory {
   usertype: {
     usertype: string;

@@ -6,10 +6,6 @@ export interface UserCredentials {
   password: string;
 }
 
-export interface LoginCredentials extends UserCredentials {
-  username: string;
-}
-
 export interface UserAddress {
   firstName: string;
   lastName: string;

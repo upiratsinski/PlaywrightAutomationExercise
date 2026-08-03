@@ -109,8 +109,7 @@ GitHub Actions runs on pushes, pull requests, and manual dispatch. Fast quality 
 installed: `npm ci`, Prettier, ESLint, and TypeScript. The workflow then installs Chromium and runs the complete
 suite with safe demo values. Concurrent runs for the same branch or pull request cancel older runs.
 
-The repository keeps `.env` files ignored, and GitHub secret scanning with push protection is enabled. It does not
-present a short list of known strings as a complete security scanner.
+Local `.env` files are ignored and no real credentials are stored in the repository.
 
 ## Reports and debugging
 
