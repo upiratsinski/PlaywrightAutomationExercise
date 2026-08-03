@@ -1,127 +1,104 @@
-import { expect, Locator, Page } from '@playwright/test';
+import { expect, type Locator, type Page } from '@playwright/test';
+import type { ProductReference, ProductReview } from '../data/products.ts';
 import { CartPage } from './cartPage.ts';
-import { BasePage } from './basePage.ts';
-import { brandData, productSearchData, reviewData } from '../data/authData.ts';
 
-export class ProductsPage extends BasePage {
-  constructor(page: Page) {
-    super(page);
-  }
+export class ProductsPage {
+  constructor(private readonly page: Page) {}
 
-  // Finds the first product details link.
   private get firstProductDetailsLink(): Locator {
-    return this.page.locator('a[href="/product_details/1"]').first();
+    // Test Cases 8, 13, and 21 explicitly exercise the first catalog product.
+    return this.page.getByRole('link', { name: 'View Product' }).first();
   }
 
-  // Finds the quantity input on a product details page.
   private get quantityInput(): Locator {
     return this.page.locator('#quantity');
   }
 
-  // Finds the add-to-cart button on a product details page.
   private get productDetailsAddToCartButton(): Locator {
-    return this.page.locator('button.btn.btn-default.cart');
+    return this.page.getByRole('button', { name: 'Add to cart' });
   }
 
-  // Finds the review name input.
+  private get reviewForm(): Locator {
+    return this.page.locator('#review-form');
+  }
+
   private get reviewNameInput(): Locator {
-    return this.page.locator('#name');
+    return this.reviewForm.getByPlaceholder('Your Name');
   }
 
-  // Finds the review email input.
   private get reviewEmailInput(): Locator {
-    return this.page.locator('#email');
+    return this.reviewForm.getByPlaceholder('Email Address');
   }
 
-  // Finds the review text area.
   private get reviewTextarea(): Locator {
-    return this.page.locator('#review');
+    return this.reviewForm.getByPlaceholder('Add Review Here!');
   }
 
-  // Finds the submit review button.
   private get submitReviewButton(): Locator {
-    return this.page.locator('#button-review');
+    return this.reviewForm.getByRole('button', { name: 'Submit' });
   }
 
-  // Finds the All Products page title.
   private get allProductsTitle(): Locator {
     return this.page.getByRole('heading', { name: 'All Products' });
   }
 
-  // Finds the Searched Products title.
   private get searchedProductsTitle(): Locator {
     return this.page.getByRole('heading', { name: 'Searched Products' });
   }
 
-  // Finds all product cards in the catalog area.
   private get productCards(): Locator {
     return this.page.locator('.features_items .product-image-wrapper');
   }
 
-  // Finds product names inside product cards.
   private get productNames(): Locator {
     return this.productCards.locator('.productinfo p');
   }
 
-  // Finds the product search input.
   private get searchInput(): Locator {
-    return this.page.locator('#search_product');
+    return this.page.getByPlaceholder('Search Product');
   }
 
-  // Finds the product search submit button.
   private get searchButton(): Locator {
     return this.page.locator('#submit_search');
   }
 
-  // Finds the Continue Shopping button in the modal.
   private get continueShoppingButton(): Locator {
     return this.page.getByRole('button', { name: 'Continue Shopping' });
   }
 
-  // Finds the View Cart link in the modal.
   private get viewCartLink(): Locator {
     return this.page.getByRole('link', { name: 'View Cart' });
   }
 
-  // Finds the brands sidebar.
-  private get brandsSidebar(): Locator {
+  private get brandsSection(): Locator {
     return this.page.locator('.brands_products');
   }
 
-  // Finds the successful review message.
   private get reviewSuccessMessage(): Locator {
-    return this.page.locator('#review-section .alert-success');
+    return this.page.locator('#review-section').getByText('Thank you for your review.', { exact: true });
   }
 
-  // Finds one product card by its visible index.
-  private productCard(index: number): Locator {
-    return this.productCards.nth(index);
+  private productCard(product: ProductReference): Locator {
+    return this.productCards.filter({ hasText: product.name });
   }
 
-  // Finds the add-to-cart link for one product card.
-  private productAddToCartLink(index: number): Locator {
-    return this.productCard(index).locator('a.add-to-cart').last();
+  private productAddToCartLink(product: ProductReference): Locator {
+    return this.productCard(product).locator('.product-overlay a.add-to-cart');
   }
 
-  // Checks that the products page is opened.
   async shouldBeOpened(): Promise<void> {
     await expect(this.page).toHaveURL('/products');
     await expect(this.allProductsTitle).toBeVisible();
   }
 
-  // Checks that the catalog has at least one visible product.
   async shouldShowProductsList(): Promise<void> {
-    await expect(this.productCards.first()).toBeVisible();
-    expect(await this.productCards.count()).toBeGreaterThan(0);
+    await expect(this.productCards.filter({ visible: true })).not.toHaveCount(0);
   }
 
-  // Opens details for the first catalog product.
   async openFirstProductDetails(): Promise<void> {
-    this.log('open first product details');
     await this.firstProductDetailsLink.click();
   }
 
-  // Checks that the first product details page shows key product information.
   async shouldShowFirstProductDetails(): Promise<void> {
     await expect(this.page).toHaveURL('/product_details/1');
     const productInformation = this.page.locator('.product-information');
@@ -134,89 +111,73 @@ export class ProductsPage extends BasePage {
     await expect(productInformation).toContainText('Brand:');
   }
 
-  // Searches the catalog with the default product name.
-  async searchDefaultProduct(): Promise<void> {
-    this.log(`search product: ${productSearchData.productName}`);
-    await this.searchInput.fill(productSearchData.productName);
+  async search(productName: string): Promise<void> {
+    await this.searchInput.fill(productName);
     await this.searchButton.click();
   }
 
-  // Checks that default search returns at least one relevant result.
-  async shouldShowDefaultSearchResults(): Promise<void> {
+  async shouldShowSearchResults(productName: string): Promise<void> {
     await expect(this.searchedProductsTitle).toBeVisible();
     await this.shouldShowProductsList();
 
     const names = await this.productNames.allTextContents();
-    expect(names.length).toBeGreaterThan(0);
-    expect(names.some((name) => name.toLowerCase().includes(productSearchData.productName.toLowerCase()))).toBeTruthy();
+    expect(names.some((name) => name.toLowerCase().includes(productName.toLowerCase()))).toBe(true);
   }
 
-  // Adds a catalog product to cart by index.
-  async addProductToCartByIndex(index: number): Promise<void> {
-    this.log(`add product with index ${index} to cart`);
-    await this.productCard(index).hover();
-    await this.productAddToCartLink(index).click();
+  async addProductToCart(product: ProductReference): Promise<void> {
+    await this.productCard(product).hover();
+    await this.productAddToCartLink(product).click();
   }
 
-  // Closes the add-to-cart modal.
   async continueShopping(): Promise<void> {
     await this.continueShoppingButton.click();
   }
 
-  // Opens the cart from the add-to-cart modal.
   async openCartFromModal(): Promise<CartPage> {
     await this.viewCartLink.click();
     return new CartPage(this.page);
   }
 
-  // Adds the first searched product and opens the cart.
   async addFirstSearchedProductToCart(): Promise<CartPage> {
-    await this.addProductToCartByIndex(0);
+    // Test Case 20 intentionally adds the first product from the filtered results.
+    const firstProductCard = this.productCards.first();
+    await firstProductCard.hover();
+    await firstProductCard.locator('.product-overlay a.add-to-cart').click();
     return this.openCartFromModal();
   }
 
-  // Adds the first product with a custom quantity.
   async addFirstProductWithQuantity(quantity: number): Promise<void> {
-    this.log(`add first product with quantity ${quantity}`);
     await this.firstProductDetailsLink.click();
     await this.quantityInput.fill(quantity.toString());
     await this.productDetailsAddToCartButton.click();
   }
 
-  // Checks that the brands sidebar is visible.
   async shouldShowBrands(): Promise<void> {
-    await expect(this.brandsSidebar.getByRole('heading', { name: 'Brands' })).toBeVisible();
+    await expect(this.brandsSection.getByRole('heading', { name: 'Brands' })).toBeVisible();
   }
 
-  // Opens the Polo brand page.
-  async openPoloBrand(): Promise<void> {
-    await this.openBrand(brandData.firstBrand);
+  async openBrand(brandName: string): Promise<void> {
+    await this.brandsSection.getByRole('link', { name: brandName }).click();
   }
 
-  // Opens the H&M brand page.
-  async openHmBrand(): Promise<void> {
-    await this.openBrand(brandData.secondBrand);
+  async shouldShowBrand(brandName: string): Promise<void> {
+    await expect(this.page.getByRole('heading', { name: `Brand - ${brandName} Products` })).toBeVisible();
+    await this.shouldShowProductsList();
   }
 
-  // Checks that the review form is visible.
   async shouldShowWriteReviewForm(): Promise<void> {
     await expect(this.page.getByRole('link', { name: 'Write Your Review' })).toBeVisible();
+    await expect(this.reviewForm).toBeVisible();
   }
 
-  // Submits the default product review.
-  async submitDefaultReview(): Promise<void> {
-    this.log('submit product review');
-    await this.reviewNameInput.fill(reviewData.name);
-    await this.reviewEmailInput.fill(reviewData.email);
-    await this.reviewTextarea.fill(reviewData.review);
+  async submitReview(review: ProductReview): Promise<void> {
+    await this.reviewNameInput.fill(review.name);
+    await this.reviewEmailInput.fill(review.email);
+    await this.reviewTextarea.fill(review.review);
     await this.submitReviewButton.click();
-    await expect(this.reviewSuccessMessage).toContainText('Thank you for your review.');
   }
 
-  // Opens a brand page and checks its title.
-  private async openBrand(brandName: string): Promise<void> {
-    this.log(`open brand: ${brandName}`);
-    await this.brandsSidebar.getByRole('link', { name: brandName }).click();
-    await expect(this.page.getByRole('heading', { name: `Brand - ${brandName} Products` })).toBeVisible();
+  async shouldShowReviewSubmitted(): Promise<void> {
+    await expect(this.reviewSuccessMessage).toBeVisible();
   }
 }

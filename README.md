@@ -1,308 +1,136 @@
-<<<<<<< HEAD
-# Playwright Automation Exercise Tests
-
-Automation QA portfolio project for [automationexercise.com](https://automationexercise.com).  
-The suite covers UI end-to-end scenarios and API checks using Playwright Test, Page Object Model, simple test data files, and environment-based configuration.
-
-## Tech Stack
-
-- TypeScript
-- Playwright Test
-- dotenv
-- Page Object Model
-- HTML reports, traces, screenshots, and videos on failure
-
-## Installation
-=======
 # Playwright Automation Exercise
 
-End-to-end and API automation test suite for [Automation Exercise](https://automationexercise.com), built with Playwright, TypeScript, and the Page Object Model pattern.
+[![Playwright CI](https://github.com/upiratsinski/PlaywrightAutomationExercise/actions/workflows/ci.yml/badge.svg)](https://github.com/upiratsinski/PlaywrightAutomationExercise/actions/workflows/ci.yml)
 
-The project covers the public Automation Exercise practice scenarios: user registration, login, cart flows, checkout, products, brands, subscriptions, contact form, reviews, invoice download, and API contract checks.
+Playwright and TypeScript portfolio project that automates the public
+[Automation Exercise](https://automationexercise.com) UI and API practice scenarios.
 
-## Tech Stack
+## Project scope
 
-| Tool | Purpose |
-| --- | --- |
-| Playwright Test | Browser automation, API testing, assertions, fixtures, reports |
-| TypeScript | Typed test code and reusable page objects |
-| dotenv | Local environment configuration |
-| Page Object Model | Maintainable UI actions and assertions |
+The repository intentionally stays small enough to explain end to end in an interview. It uses one Chromium UI
+project and one API project without adding a second automation framework or infrastructure layer.
 
-## Test Coverage
+## Test coverage
 
-### UI tests
+- 26 numbered UI scenarios covering authentication, products, cart, checkout, navigation, subscriptions, contact,
+  reviews, invoice download, and scrolling
+- 14 numbered API scenarios covering the catalog, authentication, and user lifecycle endpoints
+- A focused smoke subset for the main registration, login, catalog, search, and cart paths
+- A regression tag on all 40 scenarios
 
-The UI suite contains 26 Automation Exercise scenarios, including:
+The numbers in test titles map directly to the scenarios published by Automation Exercise.
 
-- User registration, login, logout, and account deletion
-- Contact Us form with file upload
-- Product listing, details, search, categories, and brands
-- Cart operations and product quantity checks
-- Checkout flows with registration before, during, and after login
-- Address verification, payment flow, and invoice download
-- Subscription checks from the home and cart pages
-- Scroll up and scroll down behavior
+## Tech stack
 
-### API tests
+- Playwright Test
+- TypeScript with strict type checking
+- Node.js 24 and npm
+- ESLint with the Playwright recommended rules
+- Prettier
+- GitHub Actions
 
-The API suite contains 14 checks for Automation Exercise API endpoints:
-
-- Products and brands list
-- Product search
-- Login verification
-- User creation, update, deletion, and lookup
-- Negative checks for unsupported methods and missing parameters
-
-## Project Structure
+## Project structure
 
 ```text
+.github/workflows/ci.yml              CI quality checks and Playwright run
 tests/
-+-- api/
-|   +-- Api.spec.ts
-+-- e2e/
-|   +-- Main.spec.ts
-+-- support/
-    +-- api/
-    |   +-- automationExerciseApi.ts
-    +-- elements/
-    |   +-- cartPage.ts
-    |   +-- checkoutPage.ts
-    |   +-- contactUsPage.ts
-    |   +-- loginPage.ts
-    |   +-- mainPage.ts
-    |   +-- paymentPage.ts
-    |   +-- productsPage.ts
-    +-- fixtures/
-    |   +-- apiData.ts
-    |   +-- authData.ts
-    |   +-- SampleFile.txt
-    +-- functions/
-        +-- e2eFlows.ts
+  api/                                catalog, authentication, and user API specs
+  e2e/                                UI specs grouped by business feature
+  support/
+    api/                              typed request client and response types
+    config/                           lazy environment access
+    data/                             domain data and unique-user factories
+    fixtures/                         page setup and user lifecycle teardown
+    flows/                            reusable multi-page business flows
+    pages/                            Page Objects and UI locators
 ```
 
-## Getting Started
+## Key design decisions
 
-### Prerequisites
+- Page Objects describe page-level UI behavior. Tests and flows provide credentials, search terms, contact details,
+  and payment data rather than hiding global data inside Page Objects.
+- UI and API scenarios live in separate Playwright projects and separate specs.
+- Every account factory uses `crypto.randomUUID()`. A retry receives a new email, and parallel CI runs do not share
+  one fixed user.
+- Fixtures create accounts through the API only when a scenario needs an existing user. Teardown runs after failed
+  assertions as well as successful tests and validates both the transport status and the API response body.
+- Known advertising hosts are blocked once in UI fixture setup because ads can cover controls on the public demo
+  site. Application and unrelated third-party traffic are not broadly blocked.
+- `data-qa` is configured as Playwright's test-id attribute and is accessed through `getByTestId()`.
+- Smoke and regression selection use Playwright's structured tag metadata, so tags do not clutter test titles.
+- The live suite uses one worker locally and in CI to avoid sending concurrent traffic to the shared demo service.
 
-- Node.js 18 or newer
-- npm
-- Google Chrome installed locally
+Automation Exercise commonly returns HTTP `200` even when the JSON body contains a business `responseCode` such as
+`400`, `404`, or `405`. API specs therefore assert the transport status and the body code separately.
 
-### Installation
->>>>>>> main
+## Installation
+
+Prerequisites: Node.js 24 and npm.
 
 ```bash
-npm install
-npx playwright install
+git clone https://github.com/upiratsinski/PlaywrightAutomationExercise.git
+cd PlaywrightAutomationExercise
+npm ci
+npx playwright install --with-deps chromium
 ```
 
-<<<<<<< HEAD
-## Environment Setup
+## Environment configuration
 
-Create a local `.env` file from the example:
+Copy `.env.example` to `.env`. `BASE_URL` is optional and defaults to `https://automationexercise.com`; all other
+values are read only when the relevant factory or checkout flow is used.
 
 ```bash
 cp .env.example .env
 ```
 
-Fill in the required values in `.env`. The real `.env` file is ignored by Git, so credentials and environment-specific values stay local.
+On PowerShell, use `Copy-Item .env.example .env`.
 
-## Running Tests
+The example and CI values are intentionally fake test data. Do not commit a local `.env` file or put personal
+credentials or real payment data in this project. An API-only run does not require payment variables.
 
-```bash
-npm test
-npm run test:e2e
-npm run test:api
-npm run test:smoke
-npm run test:regression
-npm run test:headed
-npm run test:debug
-npm run test:list
-```
+## Commands
 
-Open the latest HTML report:
-
-```bash
-npm run report
-```
-
-For a quick local confidence check, run:
-
-```bash
-npm run format:check
-npm run lint
-npm run test:smoke
-```
-
-## Lint And Format
-
-ESLint and Prettier are configured with simple rules for a TypeScript Playwright project.
-
-```bash
-npm run lint
-npm run lint:fix
-npm run format
-npm run format:check
-```
-
-The lint setup also catches focused tests, skipped tests, and `waitForTimeout` usage.
+| Command                   | Purpose                                     |
+| ------------------------- | ------------------------------------------- |
+| `npm test`                | Run all UI and API scenarios                |
+| `npm run test:e2e`        | Run the `chromium` UI project               |
+| `npm run test:api`        | Run the `api` project                       |
+| `npm run test:smoke`      | Run the focused smoke subset                |
+| `npm run test:regression` | Run all regression-tagged scenarios         |
+| `npm run test:headed`     | Run the UI project in headed mode           |
+| `npm run test:debug`      | Debug the UI project                        |
+| `npm run test:list`       | List collected tests without executing them |
+| `npm run check`           | Run formatting, lint, and TypeScript checks |
+| `npm run report`          | Open the latest HTML report                 |
 
 ## CI/CD
 
-GitHub Actions workflow is stored in `.github/workflows/ci.yml`.
+GitHub Actions runs on pushes, pull requests, and manual dispatch. Fast quality gates run before Chromium is
+installed: `npm ci`, Prettier, ESLint, and TypeScript. The workflow then installs Chromium and runs the complete
+suite with safe demo values. Concurrent runs for the same branch or pull request cancel older runs.
 
-It runs on every push and pull request:
+Local `.env` files are ignored and no real credentials are stored in the repository.
 
-- installs dependencies with `npm ci`
-- installs Chromium for Playwright
-- checks formatting
-- runs ESLint
-- checks for known hardcoded demo secrets
-- runs the full Playwright suite
-- uploads the HTML report as an artifact
+## Reports and debugging
 
-Configure the required repository secrets from `.env.example` before enabling CI for real runs.
+Local runs use the list and HTML reporters. CI uses the GitHub and HTML reporters. Playwright keeps:
 
-## Project Structure
+- screenshots only on failure;
+- traces only for failed tests;
+- videos only for failed tests;
+- the HTML report in `playwright-report/`;
+- failure artifacts in `test-results/`.
 
-```text
-.github/workflows/             GitHub Actions CI workflow
-scripts/                       small project maintenance scripts
-tests/
-  api/                         API specs
-  e2e/                         UI end-to-end specs
-  support/
-    api/                       API object with request helpers and assertions
-    config/                    environment loader
-    data/                      test data and upload fixtures
-    flows/                     reusable cross-page user journeys
-    pages/                     Page Object classes
-    utils/                     small shared utilities
-```
+CI uploads the HTML report even after a failure and uploads `test-results` when a job fails.
 
-## Page Object Model Approach
+## Known limitations
 
-Specs contain only high-level scenario steps. Locators, assertions, waits, and page-specific logic live inside Page Object or API object methods.
-
-Example:
-
-```ts
-const loginPage = await mainPage.openLoginPage();
-const loggedInMainPage = await loginPage.loginAsValidUser();
-
-await loggedInMainPage.shouldShowLoginUser();
-```
-
-This keeps tests readable while leaving implementation details close to the page or API they belong to.
-
-## Test Tags
-
-Smoke and regression tests are tagged in test titles:
-
-- `@smoke` for fast core confidence checks
-- `@regression` for full coverage of the current suite
-
-Use `npm run test:smoke` or `npm run test:regression` to run each group.
-
-## Speed And Stability
-
-The suite keeps UI scenarios sequential inside the UI spec because the public demo site uses shared server state. API and UI projects can still run side by side in the full suite.
-
-The reusable UI login user is prepared through API setup instead of browser setup. This keeps the UI run faster while preserving real UI login/logout scenarios where they are the behavior under test.
-
-## Reports And Debug Artifacts
-
-Playwright is configured to keep useful artifacts for failed tests:
-
-- HTML report in `playwright-report/`
-- traces in `test-results/`
-- screenshots on failure
-- videos on failure
-
-These folders are ignored by Git because they are generated during test runs.
-=======
-## Environment Variables
-
-Create a `.env` file in the project root:
-
-```env
-BASE_URL=https://automationexercise.com
-LOGIN_USERNAME=LukeSkywalker
-LOGIN_EMAIL=lukeskywalker.aqa@example.com
-LOGIN_PASSWORD=PlaywrightTest1234
-INVALID_LOGIN_EMAIL=invalidlogintest@example.com
-INVALID_LOGIN_PASSWORD=Password123
-```
-
-`BASE_URL` is required by the Playwright config. Login values are optional because the test data has defaults, but keeping them in `.env` makes local runs easier to adjust.
-
-## Running Tests
-
-Run the full test suite:
-
-```bash
-npx playwright test
-```
-
-Run only UI tests:
-
-```bash
-npx playwright test --project=chrome
-```
-
-Run only API tests:
-
-```bash
-npx playwright test --project=api
-```
-
-Run tests in headed mode:
-
-```bash
-npx playwright test --project=chrome --headed
-```
-
-Run a specific spec file:
-
-```bash
-npx playwright test tests/e2e/Main.spec.ts
-```
-
-## Reports and Debugging
-
-Open the latest HTML report:
-
-```bash
-npx playwright show-report
-```
-
-Run tests with Playwright UI mode:
-
-```bash
-npx playwright test --ui
-```
-
-Traces are collected on the first retry and can be inspected from the HTML report.
-
-## Configuration
-
-The main configuration lives in `playwright.config.ts`:
-
-- `testDir`: `./tests`
-- `reporter`: `html`
-- `baseURL`: loaded from `.env`
-- `trace`: enabled on first retry
-- `chrome` project: runs UI tests in Desktop Chrome
-- `api` project: runs API tests without browser context
-
-## Notes
-
-- The UI tests create and delete reusable users as part of setup and teardown.
-- Some flows interact with live public test data, so occasional instability can happen if the target site is slow or unavailable.
-- Generated folders such as `test-results/`, `playwright-report/`, `.pw-tmp/`, and `node_modules/` are ignored by Git.
+- The target is a shared public demo site. Availability, response time, advertisements, and server-side data are
+  outside this repository's control.
+- Tests intentionally exercise the live site rather than replacing failures with mocks.
+- Chromium is the only UI browser project; Firefox and WebKit are not included just to increase the matrix size.
+- Demo payment fields validate the practice checkout flow only and do not represent a real payment integration.
 
 ## Author
 
 Uladzislau Piratsinski
->>>>>>> main

@@ -1,84 +1,69 @@
-import { expect, Locator, Page } from '@playwright/test';
-import { BasePage } from './basePage.ts';
-import { paymentData } from '../data/authData.ts';
+import { expect, type Locator, type Page } from '@playwright/test';
+import type { PaymentDetails } from '../data/checkout.ts';
+import { MainPage } from './mainPage.ts';
 
-export class PaymentPage extends BasePage {
-  constructor(page: Page) {
-    super(page);
-  }
+export class PaymentPage {
+  constructor(private readonly page: Page) {}
 
-  // Finds the name on card input.
   private get nameOnCardInput(): Locator {
-    return this.page.locator('[data-qa="name-on-card"]');
+    return this.page.getByTestId('name-on-card');
   }
 
-  // Finds the card number input.
   private get cardNumberInput(): Locator {
-    return this.page.locator('[data-qa="card-number"]');
+    return this.page.getByTestId('card-number');
   }
 
-  // Finds the card CVC input.
   private get cvcInput(): Locator {
-    return this.page.locator('[data-qa="cvc"]');
+    return this.page.getByTestId('cvc');
   }
 
-  // Finds the card expiry month input.
   private get expiryMonthInput(): Locator {
-    return this.page.locator('[data-qa="expiry-month"]');
+    return this.page.getByTestId('expiry-month');
   }
 
-  // Finds the card expiry year input.
   private get expiryYearInput(): Locator {
-    return this.page.locator('[data-qa="expiry-year"]');
+    return this.page.getByTestId('expiry-year');
   }
 
-  // Finds the Pay and Confirm Order button.
   private get payButton(): Locator {
-    return this.page.locator('[data-qa="pay-button"]');
+    return this.page.getByTestId('pay-button');
   }
 
-  // Finds the order placed confirmation title.
   private get orderPlacedTitle(): Locator {
-    return this.page.locator('[data-qa="order-placed"]');
+    return this.page.getByTestId('order-placed');
   }
 
-  // Finds the Download Invoice link.
   private get downloadInvoiceLink(): Locator {
     return this.page.getByRole('link', { name: 'Download Invoice' });
   }
 
-  // Finds the continue button after order placement.
   private get continueButton(): Locator {
-    return this.page.locator('[data-qa="continue-button"]');
+    return this.page.getByTestId('continue-button');
   }
 
-  // Fills payment details with safe test card data from env.
-  async fillPaymentDetails(): Promise<void> {
-    this.log('fill payment details');
-    await this.nameOnCardInput.fill(paymentData.nameOnCard);
-    await this.cardNumberInput.fill(paymentData.cardNumber);
-    await this.cvcInput.fill(paymentData.cvc);
-    await this.expiryMonthInput.fill(paymentData.expiryMonth);
-    await this.expiryYearInput.fill(paymentData.expiryYear);
+  async fillPaymentDetails(data: PaymentDetails): Promise<void> {
+    await this.nameOnCardInput.fill(data.nameOnCard);
+    await this.cardNumberInput.fill(data.cardNumber);
+    await this.cvcInput.fill(data.cvc);
+    await this.expiryMonthInput.fill(data.expiryMonth);
+    await this.expiryYearInput.fill(data.expiryYear);
   }
 
-  // Pays for the order and checks the confirmation page.
-  async payAndShouldConfirmOrder(): Promise<void> {
-    this.log('pay and confirm order');
+  async pay(): Promise<void> {
     await this.payButton.click();
+  }
+
+  async shouldShowSuccessfulOrder(): Promise<void> {
     await expect(this.orderPlacedTitle).toBeVisible();
   }
 
-  // Downloads the invoice and checks the suggested file name.
   async downloadInvoiceShouldHaveCorrectName(): Promise<void> {
-    this.log('download invoice');
     const [download] = await Promise.all([this.page.waitForEvent('download'), this.downloadInvoiceLink.click()]);
-
     expect(download.suggestedFilename()).toContain('invoice');
   }
 
-  // Continues after successful order placement.
-  async continueAfterOrder(): Promise<void> {
+  async continueAfterOrder(): Promise<MainPage> {
     await this.continueButton.click();
+    return new MainPage(this.page);
   }
 }

@@ -1,11 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
-import { env } from './tests/support/config/env.ts';
+import { baseUrl } from './tests/support/config/env.ts';
 
 export default defineConfig({
   testDir: './tests',
   timeout: 30_000,
   fullyParallel: false,
-  workers: process.env.CI ? 2 : 2,
+  workers: 1,
   forbidOnly: Boolean(process.env.CI),
   retries: process.env.CI ? 1 : 0,
   outputDir: 'test-results',
@@ -14,10 +14,12 @@ export default defineConfig({
     timeout: 5_000,
   },
 
-  reporter: [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
+  reporter: process.env.CI
+    ? [['github'], ['html', { open: 'never', outputFolder: 'playwright-report' }]]
+    : [['list'], ['html', { open: 'never', outputFolder: 'playwright-report' }]],
 
   use: {
-    baseURL: env.baseUrl,
+    baseURL: baseUrl,
     screenshot: 'only-on-failure',
     trace: 'retain-on-failure',
     video: 'retain-on-failure',

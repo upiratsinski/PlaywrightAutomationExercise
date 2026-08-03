@@ -1,22 +1,28 @@
 {
-  "name": "playwrightautomationexercise",
+  "name": "playwright-automation-exercise",
   "version": "1.0.0",
-  "description": "AQA Playwright test-suite for automationexercise.com",
-  "main": "index.js",
+  "private": true,
+  "type": "module",
+  "description": "Playwright UI and API automation portfolio for automationexercise.com",
+  "packageManager": "npm@11.13.0",
+  "engines": {
+    "node": ">=24 <25"
+  },
   "scripts": {
     "test": "playwright test",
     "test:e2e": "playwright test --project=chromium",
     "test:api": "playwright test --project=api",
     "test:smoke": "playwright test --grep @smoke",
     "test:regression": "playwright test --grep @regression",
-    "test:headed": "playwright test --headed",
-    "test:debug": "playwright test --debug",
+    "test:headed": "playwright test --project=chromium --headed",
+    "test:debug": "playwright test --project=chromium --debug",
     "test:list": "playwright test --list",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier . --write",
     "format:check": "prettier . --check",
-    "check:secrets": "node scripts/check-secrets.mjs",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run format:check && npm run lint && npm run typecheck",
     "report": "playwright show-report"
   },
   "author": "Uladzislau Piratsinski",
@@ -24,13 +30,12 @@
   "devDependencies": {
     "@eslint/js": "^10.0.1",
     "@playwright/test": "^1.60.0",
-    "@types/node": "^25.2.3",
+    "@types/node": "^24.10.0",
+    "dotenv": "^17.2.4",
     "eslint": "^10.5.0",
     "eslint-plugin-playwright": "^2.10.4",
     "prettier": "^3.8.4",
+    "typescript": "^5.9.3",
     "typescript-eslint": "^8.61.1"
-  },
-  "dependencies": {
-    "dotenv": "^17.2.4"
   }
 }

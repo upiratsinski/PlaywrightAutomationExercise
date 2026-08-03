@@ -1,75 +1,63 @@
-import { expect, Locator, Page } from '@playwright/test';
-import { MainPage } from './mainPage.ts';
-import { BasePage } from './basePage.ts';
-import { contactUsData } from '../data/authData.ts';
+import { expect, type Locator, type Page } from '@playwright/test';
+import type { ContactFormData } from '../data/contact.ts';
 
-export class ContactUsPage extends BasePage {
-  constructor(page: Page) {
-    super(page);
-  }
+export class ContactUsPage {
+  constructor(private readonly page: Page) {}
 
-  // Finds the contact name input.
   private get nameInput(): Locator {
-    return this.page.locator('[data-qa="name"]');
+    return this.page.getByTestId('name');
   }
 
-  // Finds the contact email input.
   private get emailInput(): Locator {
-    return this.page.locator('[data-qa="email"]');
+    return this.page.getByTestId('email');
   }
 
-  // Finds the contact subject input.
   private get subjectInput(): Locator {
-    return this.page.locator('[data-qa="subject"]');
+    return this.page.getByTestId('subject');
   }
 
-  // Finds the contact message text area.
   private get messageTextarea(): Locator {
-    return this.page.locator('[data-qa="message"]');
+    return this.page.getByTestId('message');
   }
 
-  // Finds the file upload input.
   private get uploadFileInput(): Locator {
     return this.page.locator('input[name="upload_file"]');
   }
 
-  // Finds the contact form submit button.
   private get submitButton(): Locator {
-    return this.page.locator('[data-qa="submit-button"]');
+    return this.page.getByTestId('submit-button');
   }
 
-  // Finds the contact form success status area.
   private get successMessage(): Locator {
-    return this.page.locator('.status.alert.alert-success');
+    return this.page.locator('#contact-page .status.alert-success');
   }
 
-  // Fills and submits the contact form with default test data.
-  async submitContactForm(): Promise<MainPage> {
-    this.log('submit contact us form');
-    const dialogMessagePromise = new Promise<string>((resolve) => {
-      this.page.once('dialog', async (dialog) => {
-        const message = dialog.message();
+  async submit(data: ContactFormData): Promise<void> {
+    await this.page.waitForLoadState('domcontentloaded');
 
-        await dialog.accept();
-        resolve(message);
-      });
+    await this.nameInput.fill(data.name);
+    await this.emailInput.fill(data.email);
+    await this.subjectInput.fill(data.subject);
+    await this.messageTextarea.fill(data.message);
+    await this.uploadFileInput.setInputFiles(data.filePath);
+
+    await expect(this.nameInput).toHaveValue(data.name);
+    await expect(this.emailInput).toHaveValue(data.email);
+    await expect(this.subjectInput).toHaveValue(data.subject);
+    await expect(this.messageTextarea).toHaveValue(data.message);
+
+    const dialogMessagePromise = this.page.waitForEvent('dialog').then(async (dialog) => {
+      const message = dialog.message();
+      await dialog.accept();
+      return message;
     });
-
-    await this.nameInput.fill(contactUsData.name);
-    await this.emailInput.fill(contactUsData.email);
-    await this.subjectInput.fill(contactUsData.subject);
-    await this.messageTextarea.fill(contactUsData.message);
-    await this.uploadFileInput.setInputFiles(contactUsData.filePath);
-
-    await expect(this.nameInput).toHaveValue(contactUsData.name);
-    await expect(this.emailInput).toHaveValue(contactUsData.email);
-    await expect(this.subjectInput).toHaveValue(contactUsData.subject);
-    await expect(this.messageTextarea).toHaveValue(contactUsData.message);
 
     await this.submitButton.click();
     expect(await dialogMessagePromise).toBe('Press OK to proceed!');
-    await expect(this.successMessage).toBeVisible();
+  }
 
-    return new MainPage(this.page);
+  async shouldShowSuccess(): Promise<void> {
+    await expect(this.successMessage).toHaveText('Success! Your details have been submitted successfully.');
+    await expect(this.successMessage).toBeVisible();
   }
 }
