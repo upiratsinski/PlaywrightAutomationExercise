@@ -83,7 +83,7 @@ export class ProductsPage {
   }
 
   private productAddToCartLink(product: ProductReference): Locator {
-    return this.productCard(product).locator('.product-overlay a.add-to-cart');
+    return this.productCard(product).locator('.product-overlay').getByText('Add to cart', { exact: true });
   }
 
   async shouldBeOpened(): Promise<void> {
@@ -142,7 +142,7 @@ export class ProductsPage {
     // Test Case 20 intentionally adds the first product from the filtered results.
     const firstProductCard = this.productCards.first();
     await firstProductCard.hover();
-    await firstProductCard.locator('.product-overlay a.add-to-cart').click();
+    await firstProductCard.locator('.product-overlay').getByText('Add to cart', { exact: true }).click();
     return this.openCartFromModal();
   }
 

@@ -1,15 +1,33 @@
-import { expect, test as base } from '@playwright/test';
+import { expect, test as base, type Page } from '@playwright/test';
 import { AutomationExerciseApiClient } from '../api/automationExerciseApiClient.ts';
 import { createTestUser, toApiUser } from '../data/users.ts';
-import { blockThirdPartyAds } from '../flows/e2eFlows.ts';
 import { MainPage } from '../pages/mainPage.ts';
 import type { TestUser } from '../data/users.ts';
+
+const AD_HOST_SUFFIXES = ['doubleclick.net', 'googlesyndication.com', 'googleadservices.com'];
+const AD_HOSTS = new Set(['adservice.google.com']);
 
 interface UiFixtures {
   blockAds: void;
   generatedUser: TestUser;
   mainPage: MainPage;
   registeredUser: TestUser;
+}
+
+async function blockThirdPartyAds(page: Page): Promise<void> {
+  await page.route('**/*', async (route) => {
+    const hostname = new URL(route.request().url()).hostname;
+    const isKnownAdHost =
+      AD_HOSTS.has(hostname) ||
+      AD_HOST_SUFFIXES.some((suffix) => hostname === suffix || hostname.endsWith(`.${suffix}`));
+
+    if (isKnownAdHost) {
+      await route.abort();
+      return;
+    }
+
+    await route.continue();
+  });
 }
 
 async function deleteUiUserStrict(apiClient: AutomationExerciseApiClient, user: TestUser): Promise<void> {

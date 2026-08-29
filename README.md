@@ -32,6 +32,7 @@ The numbers in test titles map directly to the scenarios published by Automation
 ## Project structure
 
 ```text
+AGENTS.md                             repository rules and Definition of Done
 .github/workflows/ci.yml              CI quality checks and Playwright run
 tests/
   api/                                catalog, authentication, and user API specs
@@ -105,9 +106,9 @@ credentials or real payment data in this project. An API-only run does not requi
 
 ## CI/CD
 
-GitHub Actions runs on pushes, pull requests, and manual dispatch. Fast quality gates run before Chromium is
-installed: `npm ci`, Prettier, ESLint, and TypeScript. The workflow then installs Chromium and runs the complete
-suite with safe demo values. Concurrent runs for the same branch or pull request cancel older runs.
+GitHub Actions runs on pushes, pull requests, and manual dispatch. CI installs dependencies with `npm ci`, then
+runs Prettier, ESLint, and TypeScript before installing Chromium and running the complete suite with safe demo
+values. Concurrent runs for the same branch or pull request cancel older runs.
 
 Local `.env` files are ignored and no real credentials are stored in the repository.
 

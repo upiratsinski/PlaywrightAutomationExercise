@@ -29,12 +29,12 @@ export class ContactUsPage {
   }
 
   private get successMessage(): Locator {
-    return this.page.locator('#contact-page .status.alert-success');
+    return this.page
+      .locator('#contact-page')
+      .getByText('Success! Your details have been submitted successfully.', { exact: true });
   }
 
   async submit(data: ContactFormData): Promise<void> {
-    await this.page.waitForLoadState('domcontentloaded');
-
     await this.nameInput.fill(data.name);
     await this.emailInput.fill(data.email);
     await this.subjectInput.fill(data.subject);

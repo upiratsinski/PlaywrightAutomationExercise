@@ -73,7 +73,10 @@ export class MainPage {
 
   private get recommendedAddToCartButton(): Locator {
     // The scenario intentionally selects the first product in the recommendations carousel.
-    return this.page.locator('#recommended-item-carousel .item.active a.add-to-cart').first();
+    return this.page
+      .locator('#recommended-item-carousel .item.active')
+      .getByText('Add to cart', { exact: true })
+      .first();
   }
 
   private get viewCartLink(): Locator {
