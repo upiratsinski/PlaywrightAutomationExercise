@@ -107,8 +107,8 @@ credentials or real payment data in this project. An API-only run does not requi
 ## CI/CD
 
 GitHub Actions runs on pushes, pull requests, and manual dispatch. CI installs dependencies with `npm ci`, then
-runs Prettier, ESLint, and TypeScript before installing Chromium and running the complete suite with safe demo
-values. Concurrent runs for the same branch or pull request cancel older runs.
+runs Prettier, ESLint, TypeScript, and test discovery before installing Chromium and running the complete suite
+with safe demo values. Concurrent runs for the same branch or pull request cancel older runs.
 
 Local `.env` files are ignored and no real credentials are stored in the repository.
 
@@ -117,12 +117,13 @@ Local `.env` files are ignored and no real credentials are stored in the reposit
 Local runs use the list and HTML reporters. CI uses the GitHub and HTML reporters. Playwright keeps:
 
 - screenshots only on failure;
-- traces only for failed tests;
-- videos only for failed tests;
+- traces and videos for local failures;
+- traces and videos for the first retry in CI;
 - the HTML report in `playwright-report/`;
 - failure artifacts in `test-results/`.
 
-CI uploads the HTML report even after a failure and uploads `test-results` when a job fails.
+CI uploads the HTML report after successful and failed runs and uploads `test-results` when a run fails. Cancelled
+runs do not upload either artifact.
 
 ## Known limitations
 
