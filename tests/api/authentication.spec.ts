@@ -4,7 +4,7 @@ import { expect, test } from '../support/fixtures/apiTest.ts';
 test.describe('Authentication API', () => {
   test(
     'API 7: POST To Verify Login with valid details',
-    { tag: ['@smoke', '@regression'] },
+    { tag: '@smoke' },
     async ({ apiClient, registeredApiUser }) => {
       const response = await apiClient.verifyLogin(registeredApiUser);
 
@@ -14,7 +14,7 @@ test.describe('Authentication API', () => {
     },
   );
 
-  test('API 8: POST To Verify Login without email parameter', { tag: '@regression' }, async ({ apiClient }) => {
+  test('API 8: POST To Verify Login without email parameter', async ({ apiClient }) => {
     const { password } = getInvalidApiLoginData();
     const response = await apiClient.verifyLogin({ password });
 
@@ -23,7 +23,7 @@ test.describe('Authentication API', () => {
     expect(response.body.message).toBe('Bad request, email or password parameter is missing in POST request.');
   });
 
-  test('API 9: DELETE To Verify Login', { tag: '@regression' }, async ({ apiClient }) => {
+  test('API 9: DELETE To Verify Login', async ({ apiClient }) => {
     const response = await apiClient.deleteVerifyLogin();
 
     expect(response.httpStatus).toBe(200);
@@ -31,7 +31,7 @@ test.describe('Authentication API', () => {
     expect(response.body.message).toBe('This request method is not supported.');
   });
 
-  test('API 10: POST To Verify Login with invalid details', { tag: '@regression' }, async ({ apiClient }) => {
+  test('API 10: POST To Verify Login with invalid details', async ({ apiClient }) => {
     const response = await apiClient.verifyLogin(getInvalidApiLoginData());
 
     expect(response.httpStatus).toBe(200);

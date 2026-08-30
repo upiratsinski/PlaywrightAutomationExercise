@@ -1,29 +1,18 @@
 import { expect, type Locator, type Page } from '@playwright/test';
-import type { CartProduct } from '../data/products.ts';
+import { SubscriptionSection } from '../components/subscriptionSection.ts';
+import type { CartProduct, ProductReference } from '../data/products.ts';
 import { CheckoutPage } from './checkoutPage.ts';
 import { LoginPage } from './loginPage.ts';
 
 export class CartPage {
-  constructor(private readonly page: Page) {}
+  private readonly subscriptionSection: SubscriptionSection;
+
+  constructor(private readonly page: Page) {
+    this.subscriptionSection = new SubscriptionSection(page.locator('#footer'));
+  }
 
   private get cartRows(): Locator {
     return this.page.locator('tr[id^="product-"]');
-  }
-
-  private get subscriptionTitle(): Locator {
-    return this.page.getByRole('heading', { name: 'Subscription' });
-  }
-
-  private get subscriptionEmailInput(): Locator {
-    return this.page.getByPlaceholder('Your email address');
-  }
-
-  private get subscriptionButton(): Locator {
-    return this.page.locator('#subscribe');
-  }
-
-  private get subscriptionSuccessMessage(): Locator {
-    return this.page.locator('#success-subscribe');
   }
 
   private get proceedToCheckoutButton(): Locator {
@@ -47,15 +36,11 @@ export class CartPage {
   }
 
   async shouldShowSubscription(): Promise<void> {
-    await this.subscriptionTitle.scrollIntoViewIfNeeded();
-    await expect(this.subscriptionTitle).toBeInViewport();
+    await this.subscriptionSection.shouldBeVisibleInViewport();
   }
 
   async subscribe(email: string): Promise<void> {
-    await this.subscriptionEmailInput.fill(email);
-    await this.subscriptionButton.click();
-    await expect(this.subscriptionSuccessMessage).toContainText('You have been successfully subscribed!');
-    await expect(this.subscriptionSuccessMessage).toBeVisible();
+    await this.subscriptionSection.subscribe(email);
   }
 
   async shouldShowProducts(products: readonly CartProduct[]): Promise<void> {
@@ -70,6 +55,13 @@ export class CartPage {
 
   async shouldShowAnyProduct(): Promise<void> {
     await expect(this.cartRows.filter({ visible: true })).not.toHaveCount(0);
+  }
+
+  async shouldShowProduct(product: ProductReference): Promise<void> {
+    const cartProduct = this.cartProductById(product.id);
+
+    await expect(cartProduct).toBeVisible();
+    await expect(cartProduct.locator('.cart_description')).toContainText(product.name);
   }
 
   async proceedToCheckout(): Promise<CheckoutPage> {

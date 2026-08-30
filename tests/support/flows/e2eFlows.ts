@@ -3,15 +3,15 @@ import type { OrderDetails } from '../data/checkout.ts';
 import type { ProductReference } from '../data/products.ts';
 import type { TestUser } from '../data/users.ts';
 import type { CartPage } from '../pages/cartPage.ts';
-import type { MainPage } from '../pages/mainPage.ts';
+import type { HomePage } from '../pages/homePage.ts';
 import type { PaymentPage } from '../pages/paymentPage.ts';
 
 export async function addFirstTwoProductsToCart(
-  mainPage: MainPage,
+  homePage: HomePage,
   products: readonly [ProductReference, ProductReference],
 ): Promise<CartPage> {
   return test.step('Add the first two products to the cart', async () => {
-    const productsPage = await mainPage.openProductsPage();
+    const productsPage = await homePage.openProductsPage();
 
     await productsPage.addProductToCart(products[0]);
     await productsPage.continueShopping();
@@ -20,9 +20,9 @@ export async function addFirstTwoProductsToCart(
   });
 }
 
-export async function registerUserFromLogin(mainPage: MainPage, user: TestUser): Promise<MainPage> {
+export async function registerUserFromLogin(homePage: HomePage, user: TestUser): Promise<HomePage> {
   return test.step('Register a user', async () => {
-    const loginPage = await mainPage.openLoginPage();
+    const loginPage = await homePage.openLoginPage();
     return loginPage.register(user);
   });
 }

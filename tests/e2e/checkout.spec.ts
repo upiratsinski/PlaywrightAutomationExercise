@@ -5,69 +5,69 @@ import { test } from '../support/fixtures/uiTest.ts';
 
 const firstTwoProducts = [cartProductData.firstProduct, cartProductData.secondProduct] as const;
 
-test.describe('Checkout', { tag: '@regression' }, () => {
-  test('14. Register while checking out', async ({ generatedUser, mainPage }) => {
-    let cartPage = await addFirstTwoProductsToCart(mainPage, firstTwoProducts);
+test.describe('Checkout', () => {
+  test('14. Register while checking out', async ({ generatedUser, homePage }) => {
+    let cartPage = await addFirstTwoProductsToCart(homePage, firstTwoProducts);
 
     await cartPage.shouldBeOpened();
     const loginPage = await cartPage.proceedToCheckoutAndOpenRegistration();
-    const registeredMainPage = await loginPage.register(generatedUser);
+    const registeredHomePage = await loginPage.register(generatedUser);
 
-    await registeredMainPage.shouldShowLoggedInUser(generatedUser.name);
-    cartPage = await registeredMainPage.openCartPage();
+    await registeredHomePage.shouldShowLoggedInUser(generatedUser.name);
+    cartPage = await registeredHomePage.openCartPage();
     await completeOrder(cartPage, createOrderData());
-    await registeredMainPage.deleteAccount();
+    await registeredHomePage.deleteAccount();
   });
 
-  test('15. Register before checking out', async ({ generatedUser, mainPage }) => {
-    const registeredMainPage = await registerUserFromLogin(mainPage, generatedUser);
+  test('15. Register before checking out', async ({ generatedUser, homePage }) => {
+    const registeredHomePage = await registerUserFromLogin(homePage, generatedUser);
 
-    await registeredMainPage.shouldShowLoggedInUser(generatedUser.name);
-    const cartPage = await addFirstTwoProductsToCart(registeredMainPage, firstTwoProducts);
+    await registeredHomePage.shouldShowLoggedInUser(generatedUser.name);
+    const cartPage = await addFirstTwoProductsToCart(registeredHomePage, firstTwoProducts);
 
     await cartPage.shouldBeOpened();
     await completeOrder(cartPage, createOrderData());
-    await registeredMainPage.deleteAccount();
+    await registeredHomePage.deleteAccount();
   });
 
-  test('16. Login before checking out', async ({ mainPage, registeredUser }) => {
-    const loginPage = await mainPage.openLoginPage();
-    const loggedInMainPage = await loginPage.login(registeredUser);
+  test('16. Login before checking out', async ({ homePage, registeredUser }) => {
+    const loginPage = await homePage.openLoginPage();
+    const loggedInHomePage = await loginPage.login(registeredUser);
 
-    await loggedInMainPage.shouldShowLoggedInUser(registeredUser.name);
-    const cartPage = await addFirstTwoProductsToCart(loggedInMainPage, firstTwoProducts);
+    await loggedInHomePage.shouldShowLoggedInUser(registeredUser.name);
+    const cartPage = await addFirstTwoProductsToCart(loggedInHomePage, firstTwoProducts);
 
     await cartPage.shouldBeOpened();
     await completeOrder(cartPage, createOrderData());
   });
 
-  test('23. Show the registered checkout address', async ({ generatedUser, mainPage }) => {
-    const registeredMainPage = await registerUserFromLogin(mainPage, generatedUser);
+  test('23. Show the registered checkout address', async ({ generatedUser, homePage }) => {
+    const registeredHomePage = await registerUserFromLogin(homePage, generatedUser);
 
-    await registeredMainPage.shouldShowLoggedInUser(generatedUser.name);
-    const cartPage = await addFirstTwoProductsToCart(registeredMainPage, firstTwoProducts);
+    await registeredHomePage.shouldShowLoggedInUser(generatedUser.name);
+    const cartPage = await addFirstTwoProductsToCart(registeredHomePage, firstTwoProducts);
 
     await cartPage.shouldBeOpened();
     const checkoutPage = await cartPage.proceedToCheckout();
 
     await checkoutPage.shouldBeOpened();
     await checkoutPage.shouldShowRegisteredAddressDetails(generatedUser);
-    await registeredMainPage.deleteAccount();
+    await registeredHomePage.deleteAccount();
   });
 
-  test('24. Download an invoice after an order', async ({ generatedUser, mainPage }) => {
-    let cartPage = await addFirstTwoProductsToCart(mainPage, firstTwoProducts);
+  test('24. Download an invoice after an order', async ({ generatedUser, homePage }) => {
+    let cartPage = await addFirstTwoProductsToCart(homePage, firstTwoProducts);
 
     await cartPage.shouldBeOpened();
     const loginPage = await cartPage.proceedToCheckoutAndOpenRegistration();
-    const registeredMainPage = await loginPage.register(generatedUser);
+    const registeredHomePage = await loginPage.register(generatedUser);
 
-    await registeredMainPage.shouldShowLoggedInUser(generatedUser.name);
-    cartPage = await registeredMainPage.openCartPage();
+    await registeredHomePage.shouldShowLoggedInUser(generatedUser.name);
+    cartPage = await registeredHomePage.openCartPage();
     const paymentPage = await completeOrder(cartPage, createOrderData());
 
     await paymentPage.downloadInvoiceShouldHaveCorrectName();
-    const mainPageAfterOrder = await paymentPage.continueAfterOrder();
-    await mainPageAfterOrder.deleteAccount();
+    const homePageAfterOrder = await paymentPage.continueAfterOrder();
+    await homePageAfterOrder.deleteAccount();
   });
 });

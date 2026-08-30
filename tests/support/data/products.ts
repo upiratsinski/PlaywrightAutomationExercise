@@ -5,6 +5,14 @@ export interface ProductReference {
   name: string;
 }
 
+export interface ProductDetails extends ProductReference {
+  price: string;
+  category: string;
+  availability: string;
+  condition: string;
+  brand: string;
+}
+
 export interface CartProduct extends ProductReference {
   price: string;
   quantity: string;
@@ -18,7 +26,7 @@ export interface ProductReview {
 }
 
 export const productSearchData = {
-  productName: 'Dress',
+  productName: 'Sleeveless',
 };
 
 export function createReviewData(): ProductReview {
@@ -29,11 +37,21 @@ export function createReviewData(): ProductReview {
   };
 }
 
+export const firstProductDetails = {
+  id: 1,
+  name: 'Blue Top',
+  price: 'Rs. 500',
+  category: 'Women > Tops',
+  availability: 'In Stock',
+  condition: 'New',
+  brand: 'Polo',
+} satisfies ProductDetails;
+
 export const cartProductData = {
   firstProduct: {
-    id: 1,
-    name: 'Blue Top',
-    price: 'Rs. 500',
+    id: firstProductDetails.id,
+    name: firstProductDetails.name,
+    price: firstProductDetails.price,
     quantity: '1',
     totalPrice: 'Rs. 500',
   },

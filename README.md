@@ -2,13 +2,14 @@
 
 [![Playwright CI](https://github.com/upiratsinski/PlaywrightAutomationExercise/actions/workflows/ci.yml/badge.svg)](https://github.com/upiratsinski/PlaywrightAutomationExercise/actions/workflows/ci.yml)
 
-Playwright and TypeScript portfolio project that automates the public
-[Automation Exercise](https://automationexercise.com) UI and API practice scenarios.
+Playwright + TypeScript UI and API test automation project for
+[Automation Exercise](https://automationexercise.com), with isolated test data, reusable fixtures, typed API
+access, Page Objects, reusable flows, and GitHub Actions CI.
 
 ## Project scope
 
-The repository intentionally stays small enough to explain end to end in an interview. It uses one Chromium UI
-project and one API project without adding a second automation framework or infrastructure layer.
+The repository contains 40 automated scenarios: 26 in the Chromium UI project and 14 in the API project. Strict
+TypeScript, a focused smoke subset, and GitHub Actions quality gates support deterministic local and CI execution.
 
 ## Test coverage
 
@@ -16,7 +17,6 @@ project and one API project without adding a second automation framework or infr
   reviews, invoice download, and scrolling
 - 14 numbered API scenarios covering the catalog, authentication, and user lifecycle endpoints
 - A focused smoke subset for the main registration, login, catalog, search, and cart paths
-- A regression tag on all 40 scenarios
 
 The numbers in test titles map directly to the scenarios published by Automation Exercise.
 
@@ -32,13 +32,15 @@ The numbers in test titles map directly to the scenarios published by Automation
 ## Project structure
 
 ```text
-AGENTS.md                             repository rules and Definition of Done
-.github/workflows/ci.yml              CI quality checks and Playwright run
+.github/
+  dependabot.yml                      weekly npm and GitHub Actions updates
+  workflows/ci.yml                    CI quality checks and Playwright run
 tests/
   api/                                catalog, authentication, and user API specs
   e2e/                                UI specs grouped by business feature
   support/
     api/                              typed request client and response types
+    components/                       shared UI fragments with genuine reuse
     config/                           lazy environment access
     data/                             domain data and unique-user factories
     fixtures/                         page setup and user lifecycle teardown
@@ -58,7 +60,7 @@ tests/
 - Known advertising hosts are blocked once in UI fixture setup because ads can cover controls on the public demo
   site. Application and unrelated third-party traffic are not broadly blocked.
 - `data-qa` is configured as Playwright's test-id attribute and is accessed through `getByTestId()`.
-- Smoke and regression selection use Playwright's structured tag metadata, so tags do not clutter test titles.
+- The complete suite is the regression gate; Playwright's structured `@smoke` metadata selects only critical paths.
 - The live suite uses one worker locally and in CI to avoid sending concurrent traffic to the shared demo service.
 
 Automation Exercise commonly returns HTTP `200` even when the JSON body contains a business `responseCode` such as
@@ -91,18 +93,17 @@ credentials or real payment data in this project. An API-only run does not requi
 
 ## Commands
 
-| Command                   | Purpose                                     |
-| ------------------------- | ------------------------------------------- |
-| `npm test`                | Run all UI and API scenarios                |
-| `npm run test:e2e`        | Run the `chromium` UI project               |
-| `npm run test:api`        | Run the `api` project                       |
-| `npm run test:smoke`      | Run the focused smoke subset                |
-| `npm run test:regression` | Run all regression-tagged scenarios         |
-| `npm run test:headed`     | Run the UI project in headed mode           |
-| `npm run test:debug`      | Debug the UI project                        |
-| `npm run test:list`       | List collected tests without executing them |
-| `npm run check`           | Run formatting, lint, and TypeScript checks |
-| `npm run report`          | Open the latest HTML report                 |
+| Command               | Purpose                                     |
+| --------------------- | ------------------------------------------- |
+| `npm test`            | Run all UI and API scenarios                |
+| `npm run test:e2e`    | Run the `chromium` UI project               |
+| `npm run test:api`    | Run the `api` project                       |
+| `npm run test:smoke`  | Run the focused smoke subset                |
+| `npm run test:headed` | Run the UI project in headed mode           |
+| `npm run test:debug`  | Debug the UI project                        |
+| `npm run test:list`   | List collected tests without executing them |
+| `npm run check`       | Run formatting, lint, and TypeScript checks |
+| `npm run report`      | Open the latest HTML report                 |
 
 ## CI/CD
 

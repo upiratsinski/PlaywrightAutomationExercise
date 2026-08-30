@@ -1,11 +1,16 @@
 import { expect, type Locator, type Page } from '@playwright/test';
+import { SubscriptionSection } from '../components/subscriptionSection.ts';
 import { CartPage } from './cartPage.ts';
 import { ContactUsPage } from './contactUsPage.ts';
 import { LoginPage } from './loginPage.ts';
 import { ProductsPage } from './productsPage.ts';
 
-export class MainPage {
-  constructor(private readonly page: Page) {}
+export class HomePage {
+  private readonly subscriptionSection: SubscriptionSection;
+
+  constructor(private readonly page: Page) {
+    this.subscriptionSection = new SubscriptionSection(page.locator('#footer'));
+  }
 
   private get header(): Locator {
     return this.page.getByRole('banner');
@@ -49,22 +54,6 @@ export class MainPage {
 
   private get continueButton(): Locator {
     return this.page.getByTestId('continue-button');
-  }
-
-  private get subscriptionTitle(): Locator {
-    return this.page.getByRole('heading', { name: 'Subscription' });
-  }
-
-  private get subscriptionEmailInput(): Locator {
-    return this.page.getByPlaceholder('Your email address');
-  }
-
-  private get subscriptionButton(): Locator {
-    return this.page.locator('#subscribe');
-  }
-
-  private get subscriptionSuccessMessage(): Locator {
-    return this.page.locator('#success-subscribe');
   }
 
   private get recommendedItemsTitle(): Locator {
@@ -147,15 +136,11 @@ export class MainPage {
   }
 
   async shouldShowSubscription(): Promise<void> {
-    await this.subscriptionTitle.scrollIntoViewIfNeeded();
-    await expect(this.subscriptionTitle).toBeInViewport();
+    await this.subscriptionSection.shouldBeVisibleInViewport();
   }
 
   async subscribe(email: string): Promise<void> {
-    await this.subscriptionEmailInput.fill(email);
-    await this.subscriptionButton.click();
-    await expect(this.subscriptionSuccessMessage).toContainText('You have been successfully subscribed!');
-    await expect(this.subscriptionSuccessMessage).toBeVisible();
+    await this.subscriptionSection.subscribe(email);
   }
 
   async shouldShowCategories(): Promise<void> {
@@ -186,8 +171,7 @@ export class MainPage {
   }
 
   async scrollToFooter(): Promise<void> {
-    await this.subscriptionTitle.scrollIntoViewIfNeeded();
-    await expect(this.subscriptionTitle).toBeInViewport();
+    await this.subscriptionSection.shouldBeVisibleInViewport();
   }
 
   async scrollUpWithArrow(): Promise<void> {

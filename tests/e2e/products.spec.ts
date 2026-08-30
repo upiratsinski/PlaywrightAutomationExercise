@@ -1,33 +1,33 @@
-import { brandData, createReviewData, productSearchData } from '../support/data/products.ts';
+import { brandData, createReviewData, firstProductDetails, productSearchData } from '../support/data/products.ts';
 import { test } from '../support/fixtures/uiTest.ts';
 
-test.describe('Products', { tag: '@regression' }, () => {
-  test('8. Show the products list and product details', { tag: '@smoke' }, async ({ mainPage }) => {
-    await mainPage.shouldBeOpened();
-    const productsPage = await mainPage.openProductsPage();
+test.describe('Products', () => {
+  test('8. Show the products list and product details', { tag: '@smoke' }, async ({ homePage }) => {
+    await homePage.shouldBeOpened();
+    const productsPage = await homePage.openProductsPage();
 
     await productsPage.shouldBeOpened();
     await productsPage.shouldShowProductsList();
     await productsPage.openFirstProductDetails();
-    await productsPage.shouldShowFirstProductDetails();
+    await productsPage.shouldShowProductDetails(firstProductDetails);
   });
 
-  test('9. Search for products', { tag: '@smoke' }, async ({ mainPage }) => {
-    const productsPage = await mainPage.openProductsPage();
+  test('9. Search for products', { tag: '@smoke' }, async ({ homePage }) => {
+    const productsPage = await homePage.openProductsPage();
 
     await productsPage.shouldBeOpened();
     await productsPage.search(productSearchData.productName);
     await productsPage.shouldShowSearchResults(productSearchData.productName);
   });
 
-  test('18. Browse products by category', async ({ mainPage }) => {
-    await mainPage.shouldShowCategories();
-    await mainPage.openWomenDressCategory();
-    await mainPage.openMenTshirtsCategory();
+  test('18. Browse products by category', async ({ homePage }) => {
+    await homePage.shouldShowCategories();
+    await homePage.openWomenDressCategory();
+    await homePage.openMenTshirtsCategory();
   });
 
-  test('19. Browse products by brand', async ({ mainPage }) => {
-    const productsPage = await mainPage.openProductsPage();
+  test('19. Browse products by brand', async ({ homePage }) => {
+    const productsPage = await homePage.openProductsPage();
 
     await productsPage.shouldShowBrands();
     await productsPage.openBrand(brandData.firstBrand);
@@ -36,8 +36,8 @@ test.describe('Products', { tag: '@regression' }, () => {
     await productsPage.shouldShowBrand(brandData.secondBrand);
   });
 
-  test('21. Submit a product review', async ({ mainPage }) => {
-    const productsPage = await mainPage.openProductsPage();
+  test('21. Submit a product review', async ({ homePage }) => {
+    const productsPage = await homePage.openProductsPage();
 
     await productsPage.shouldBeOpened();
     await productsPage.openFirstProductDetails();
@@ -46,9 +46,9 @@ test.describe('Products', { tag: '@regression' }, () => {
     await productsPage.shouldShowReviewSubmitted();
   });
 
-  test('22. Add a recommended product to the cart', async ({ mainPage }) => {
-    await mainPage.shouldShowRecommendedItems();
-    const cartPage = await mainPage.addRecommendedProductToCart();
+  test('22. Add a recommended product to the cart', async ({ homePage }) => {
+    await homePage.shouldShowRecommendedItems();
+    const cartPage = await homePage.addRecommendedProductToCart();
 
     await cartPage.shouldShowAnyProduct();
   });

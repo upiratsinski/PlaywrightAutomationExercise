@@ -32,7 +32,7 @@ export default tseslint.config(
       'playwright/no-wait-for-timeout': 'error',
       'playwright/prefer-web-first-assertions': 'error',
       'playwright/expect-expect': [
-        'warn',
+        'error',
         {
           assertFunctionPatterns: ['^should[A-Z]'],
         },

@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import type { PaymentDetails } from '../data/checkout.ts';
-import { MainPage } from './mainPage.ts';
+import { HomePage } from './homePage.ts';
 
 export class PaymentPage {
   constructor(private readonly page: Page) {}
@@ -62,8 +62,8 @@ export class PaymentPage {
     expect(download.suggestedFilename()).toContain('invoice');
   }
 
-  async continueAfterOrder(): Promise<MainPage> {
+  async continueAfterOrder(): Promise<HomePage> {
     await this.continueButton.click();
-    return new MainPage(this.page);
+    return new HomePage(this.page);
   }
 }

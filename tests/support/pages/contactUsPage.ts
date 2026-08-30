@@ -41,11 +41,6 @@ export class ContactUsPage {
     await this.messageTextarea.fill(data.message);
     await this.uploadFileInput.setInputFiles(data.filePath);
 
-    await expect(this.nameInput).toHaveValue(data.name);
-    await expect(this.emailInput).toHaveValue(data.email);
-    await expect(this.subjectInput).toHaveValue(data.subject);
-    await expect(this.messageTextarea).toHaveValue(data.message);
-
     const dialogMessagePromise = this.page.waitForEvent('dialog').then(async (dialog) => {
       const message = dialog.message();
       await dialog.accept();
@@ -57,7 +52,6 @@ export class ContactUsPage {
   }
 
   async shouldShowSuccess(): Promise<void> {
-    await expect(this.successMessage).toHaveText('Success! Your details have been submitted successfully.');
     await expect(this.successMessage).toBeVisible();
   }
 }

@@ -26,6 +26,7 @@
 - Keep UI specs readable as business behavior with minimal technical detail.
 - `tests/api` contains executable API behavior and lifecycle scenarios.
 - `tests/support/pages` contains page-specific locators, actions, and natural page checks.
+- `tests/support/components` contains small page fragments reused by multiple Page Objects.
 - `tests/support/flows` contains reusable workflows spanning pages or business steps.
 - `tests/support/fixtures` owns reusable setup, cleanup, and fixture composition.
 - Fixture-only infrastructure belongs in fixtures, not business flows.
@@ -147,14 +148,14 @@
 
 - Use Playwright metadata for tags; do not put tags in test titles.
 - `@smoke` is only for critical, fast, representative paths.
-- `@regression` covers the complete intended suite.
+- The complete `npm test` suite is the regression gate; do not add a redundant regression tag.
 - Do not invent additional tag families without a requirement.
 
 ## CI
 
 - Keep GitHub Actions as the only CI system.
 - Use the Node version declared by the repository.
-- CI order is checkout, Node setup, `npm ci`, Prettier, ESLint, and TypeScript.
+- CI order is checkout, Node setup, `npm ci`, Prettier, ESLint, TypeScript, and test discovery.
 - Then install Chromium with required dependencies and run `npm test`.
 - Upload the HTML report even when tests fail.
 - Upload `test-results` only on failure.

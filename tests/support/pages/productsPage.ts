@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page } from '@playwright/test';
-import type { ProductReference, ProductReview } from '../data/products.ts';
+import type { ProductDetails, ProductReference, ProductReview } from '../data/products.ts';
 import { CartPage } from './cartPage.ts';
 
 export class ProductsPage {
@@ -99,16 +99,16 @@ export class ProductsPage {
     await this.firstProductDetailsLink.click();
   }
 
-  async shouldShowFirstProductDetails(): Promise<void> {
-    await expect(this.page).toHaveURL('/product_details/1');
+  async shouldShowProductDetails(product: ProductDetails): Promise<void> {
+    await expect(this.page).toHaveURL(`/product_details/${product.id}`);
     const productInformation = this.page.locator('.product-information');
 
-    await expect(productInformation.getByRole('heading')).toBeVisible();
-    await expect(productInformation).toContainText('Category:');
-    await expect(productInformation).toContainText('Rs.');
-    await expect(productInformation).toContainText('Availability:');
-    await expect(productInformation).toContainText('Condition:');
-    await expect(productInformation).toContainText('Brand:');
+    await expect(productInformation.getByRole('heading', { name: product.name, exact: true })).toBeVisible();
+    await expect(productInformation).toContainText(`Category: ${product.category}`);
+    await expect(productInformation).toContainText(product.price);
+    await expect(productInformation).toContainText(`Availability: ${product.availability}`);
+    await expect(productInformation).toContainText(`Condition: ${product.condition}`);
+    await expect(productInformation).toContainText(`Brand: ${product.brand}`);
   }
 
   async search(productName: string): Promise<void> {
@@ -118,10 +118,13 @@ export class ProductsPage {
 
   async shouldShowSearchResults(productName: string): Promise<void> {
     await expect(this.searchedProductsTitle).toBeVisible();
-    await this.shouldShowProductsList();
+    const visibleProductNames = this.productNames.filter({ visible: true });
 
-    const names = await this.productNames.allTextContents();
-    expect(names.some((name) => name.toLowerCase().includes(productName.toLowerCase()))).toBe(true);
+    await expect(visibleProductNames).not.toHaveCount(0);
+
+    const expectedName = productName.toLowerCase();
+    const names = await visibleProductNames.allTextContents();
+    expect(names.every((name) => name.toLowerCase().includes(expectedName))).toBe(true);
   }
 
   async addProductToCart(product: ProductReference): Promise<void> {
@@ -138,12 +141,25 @@ export class ProductsPage {
     return new CartPage(this.page);
   }
 
-  async addFirstSearchedProductToCart(): Promise<CartPage> {
+  async addFirstSearchedProductToCart(): Promise<{ cartPage: CartPage; product: ProductReference }> {
     // Test Case 20 intentionally adds the first product from the filtered results.
-    const firstProductCard = this.productCards.first();
+    const firstProductCard = this.productCards.filter({ visible: true }).first();
+    const productName = (await firstProductCard.locator('.productinfo p').innerText()).trim();
+    const addToCartButton = firstProductCard.locator('.product-overlay').getByText('Add to cart', { exact: true });
+    const productIdAttribute = await addToCartButton.getAttribute('data-product-id');
+    const productId = Number(productIdAttribute);
+
+    if (!productName || productIdAttribute === null || !Number.isInteger(productId)) {
+      throw new Error('The first searched product is missing a usable name or product ID.');
+    }
+
     await firstProductCard.hover();
-    await firstProductCard.locator('.product-overlay').getByText('Add to cart', { exact: true }).click();
-    return this.openCartFromModal();
+    await addToCartButton.click();
+
+    return {
+      cartPage: await this.openCartFromModal(),
+      product: { id: productId, name: productName },
+    };
   }
 
   async addFirstProductWithQuantity(quantity: number): Promise<void> {
