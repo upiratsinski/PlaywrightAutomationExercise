@@ -1,15 +1,21 @@
-import { expect, test as base } from '@playwright/test';
+import { expect, test as base, type Page } from '@playwright/test';
 import { AutomationExerciseApiClient } from '../api/automationExerciseApiClient.ts';
 import { createTestUser, toApiUser } from '../data/users.ts';
-import { blockThirdPartyAds } from '../flows/e2eFlows.ts';
-import { MainPage } from '../pages/mainPage.ts';
+import { HomePage } from '../pages/homePage.ts';
 import type { TestUser } from '../data/users.ts';
+
+const AD_URL_PATTERN =
+  /^https?:\/\/(?:(?:[^./]+\.)*(?:doubleclick\.net|googlesyndication\.com|googleadservices\.com)|adservice\.google\.com)(?=[:/])/i;
 
 interface UiFixtures {
   blockAds: void;
   generatedUser: TestUser;
-  mainPage: MainPage;
+  homePage: HomePage;
   registeredUser: TestUser;
+}
+
+async function blockThirdPartyAds(page: Page): Promise<void> {
+  await page.route(AD_URL_PATTERN, (route) => route.abort());
 }
 
 async function deleteUiUserStrict(apiClient: AutomationExerciseApiClient, user: TestUser): Promise<void> {
@@ -35,11 +41,11 @@ export const test = base.extend<UiFixtures>({
     { auto: true },
   ],
 
-  mainPage: async ({ page }, use) => {
-    const mainPage = new MainPage(page);
+  homePage: async ({ page }, use) => {
+    const homePage = new HomePage(page);
 
-    await mainPage.open();
-    await use(mainPage);
+    await homePage.open();
+    await use(homePage);
   },
 
   generatedUser: async ({ request }, use, testInfo) => {

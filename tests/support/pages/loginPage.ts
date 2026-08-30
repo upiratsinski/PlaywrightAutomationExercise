@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 import type { TestUser, UserCredentials } from '../data/users.ts';
-import { MainPage } from './mainPage.ts';
+import { HomePage } from './homePage.ts';
 
 export class LoginPage {
   constructor(private readonly page: Page) {}
@@ -115,15 +115,15 @@ export class LoginPage {
     await expect(this.page.getByRole('heading', { name: 'New User Signup!' })).toBeVisible();
   }
 
-  async register(user: TestUser): Promise<MainPage> {
+  async register(user: TestUser): Promise<HomePage> {
     await this.submitSignup({ name: user.name, email: user.email });
     await this.fillRegistrationForm(user);
     return this.submitRegistrationForm();
   }
 
-  async login(credentials: UserCredentials): Promise<MainPage> {
+  async login(credentials: UserCredentials): Promise<HomePage> {
     await this.submitLogin(credentials);
-    return new MainPage(this.page);
+    return new HomePage(this.page);
   }
 
   async submitLogin(credentials: UserCredentials): Promise<void> {
@@ -164,10 +164,10 @@ export class LoginPage {
     await this.mobileNumberInput.fill(user.mobileNumber);
   }
 
-  private async submitRegistrationForm(): Promise<MainPage> {
+  private async submitRegistrationForm(): Promise<HomePage> {
     await this.createAccountButton.click();
     await expect(this.accountCreatedTitle).toBeVisible();
     await this.continueButton.click();
-    return new MainPage(this.page);
+    return new HomePage(this.page);
   }
 }

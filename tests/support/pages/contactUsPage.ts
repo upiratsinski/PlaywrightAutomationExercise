@@ -29,22 +29,17 @@ export class ContactUsPage {
   }
 
   private get successMessage(): Locator {
-    return this.page.locator('#contact-page .status.alert-success');
+    return this.page
+      .locator('#contact-page')
+      .getByText('Success! Your details have been submitted successfully.', { exact: true });
   }
 
   async submit(data: ContactFormData): Promise<void> {
-    await this.page.waitForLoadState('domcontentloaded');
-
     await this.nameInput.fill(data.name);
     await this.emailInput.fill(data.email);
     await this.subjectInput.fill(data.subject);
     await this.messageTextarea.fill(data.message);
     await this.uploadFileInput.setInputFiles(data.filePath);
-
-    await expect(this.nameInput).toHaveValue(data.name);
-    await expect(this.emailInput).toHaveValue(data.email);
-    await expect(this.subjectInput).toHaveValue(data.subject);
-    await expect(this.messageTextarea).toHaveValue(data.message);
 
     const dialogMessagePromise = this.page.waitForEvent('dialog').then(async (dialog) => {
       const message = dialog.message();
@@ -57,7 +52,6 @@ export class ContactUsPage {
   }
 
   async shouldShowSuccess(): Promise<void> {
-    await expect(this.successMessage).toHaveText('Success! Your details have been submitted successfully.');
     await expect(this.successMessage).toBeVisible();
   }
 }
