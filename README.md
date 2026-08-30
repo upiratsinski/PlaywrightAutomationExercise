@@ -1,15 +1,17 @@
-# Playwright Automation Exercise
+# Playwright UI & API Automation Portfolio
 
-[![Playwright CI](https://github.com/upiratsinski/PlaywrightAutomationExercise/actions/workflows/ci.yml/badge.svg)](https://github.com/upiratsinski/PlaywrightAutomationExercise/actions/workflows/ci.yml)
+[![Playwright CI](https://github.com/upiratsinski/playwright-e2e-framework/actions/workflows/ci.yml/badge.svg)](https://github.com/upiratsinski/playwright-e2e-framework/actions/workflows/ci.yml)
 
 Playwright + TypeScript UI and API test automation project for
 [Automation Exercise](https://automationexercise.com), with isolated test data, reusable fixtures, typed API
 access, Page Objects, reusable flows, and GitHub Actions CI.
 
-## Project scope
+## Portfolio highlights
 
-The repository contains 40 automated scenarios: 26 in the Chromium UI project and 14 in the API project. Strict
-TypeScript, a focused smoke subset, and GitHub Actions quality gates support deterministic local and CI execution.
+- 40 independently executable scenarios: 26 Chromium UI tests and 14 API tests
+- Strict TypeScript, typed API contracts, and separate transport and business-response assertions
+- Unique test identities with API-assisted setup and fixture-owned cleanup
+- A focused smoke subset and a complete GitHub Actions regression gate
 
 ## Test coverage
 
@@ -71,8 +73,8 @@ Automation Exercise commonly returns HTTP `200` even when the JSON body contains
 Prerequisites: Node.js 24 and npm.
 
 ```bash
-git clone https://github.com/upiratsinski/PlaywrightAutomationExercise.git
-cd PlaywrightAutomationExercise
+git clone https://github.com/upiratsinski/playwright-e2e-framework.git
+cd playwright-e2e-framework
 npm ci
 npx playwright install --with-deps chromium
 ```
